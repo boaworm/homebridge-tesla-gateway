@@ -75,7 +75,7 @@ The configuration can contain the following properties:
 
 ##### Advanced configuration options:
 
-* `statusPattern` \<string\> **optional** \(Default: **"(-?[0-9]{1,3}(\.[0-9]))"**): Defines a regex pattern with which the 
+* `statusPattern` \<string\> **optional** \(Default: **"((\d,[0-9]{1,3})"**): Defines a regex pattern with which the 
     status is extracted from the body of the http response from the `getUrl`. The group which should
     be extracted can be configured with the `patternGroupToExtract` property.  
     [More about regex pattern](https://www.w3schools.com/jsref/jsref_obj_regexp.asp).
