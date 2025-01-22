@@ -93,11 +93,6 @@ HTTP_TESLA_GATEWAY.prototype = {
     },
 
     getServices: function () {
-        if (!this.homebridgeService){
-			this.log.error("Failed to read homebridgeService, exiting");
-            return [];
-		}
-
         const informationService = new Service.AccessoryInformation();
 
         informationService
@@ -113,7 +108,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 			this._getStatus(function() {})
 		}.bind(this), 15 * 1000);
 
-        return [informationService, this.BatteryService, this.homebridgeService];
+        return [informationService, this.BatteryService];
     },
 
 	_httpRequest: function (url, callback){
