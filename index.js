@@ -61,6 +61,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
             this.log.warn("Property 'patternGroupToExtract' must be a number! Using default value!");
     }
 
+	/*
     this.homebridgeService = new Service.Battery(this.name, "Powerwall");
     let blc = this.homebridgeService.getCharacteristic(Characteristic.BatteryLevel);
     blc.setProps({ minValue: 0, maxValue: 100 });
@@ -69,14 +70,17 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	let csc = this.homebridgeService.getCharacteristic(Characteristic.ChargingState);
 	csc.setProps({ minValue: 0, maxValue: 1 });
     csc.on("get", this.getSensorReading.bind(this));
+	*/
 
     /** @namespace config.pullInterval */
+	/*
     if (config.pullInterval) {
         this.pullTimer = new PullTimer(log, config.pullInterval, this.getSensorReading.bind(this), value => {
 			getSensorReading();
         });
         this.pullTimer.start();
     }
+	*/
 
 
 } // End of init function
