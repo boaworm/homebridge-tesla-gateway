@@ -10,6 +10,8 @@ const notifications = _http_base.notifications;
 const MQTTClient = _http_base.MQTTClient;
 const Cache = _http_base.Cache;
 const utils = _http_base.utils;
+const request = require('request')
+
 
 const packageJSON = require("./package.json");
 
