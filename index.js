@@ -70,40 +70,11 @@ function HTTP_TESLA_GATEWAY(log, config) {
     /** @namespace config.pullInterval */
     if (config.pullInterval) {
         this.pullTimer = new PullTimer(log, config.pullInterval, this.getSensorReading.bind(this), value => {
-			// Value should be 1,100
-			this.log.info("Read this value from web proxy:", value)
-
-
-			let chargeStateValue = value.split(',')[0]
-			if(!csc)
-				log.error("Unable to get ChargingLevel characteristic")
-			else{
-				const x = Math.floor(Math.random() * 2);
-				csc.updateValue(x)
-				this.log.info("Set ChargingLevel to ", x);
-				//csc.updateValue(chargeStateValue)
-			}
-
-			let batteryLevelValue = value.split(',')[1]
-			this.log.info("Received BatteryLevel [", batteryLevelValue, "] from gateway");
-			let batteryLevelFloat = (batteryLevelValue / 100) - 0.01;
-			if(batteryLevelFloat <= 0.01)
-				batteryLevelFoat = 0.01
-			this.log.info("Setting BatteryLevel to", batteryLevelFloat)
-
-
-            //this.homebridgeService.setCharacteristic(Characteristic.BatteryLevel, batteryLevelValue);
-			//const blc = utils.getCharacteristic(this.homebridgeService, Characteristic.BatteryLevel);
-			if(!blc)
-				log.error("Unable to get BatteryLevel characteristic");
-			else
-				blc.updateValue(batteryLevelValue)
-
+			getSensorReading();
         });
         this.pullTimer.start();
     }
 
-    notifications.enqueueNotificationRegistrationIfDefined(api, log, config.notificationID, config.notificationPassword, this.handleNotification.bind(this));
 
 } // End of init function
 
@@ -129,38 +100,8 @@ HTTP_TESLA_GATEWAY.prototype = {
         return [informationService, this.homebridgeService];
     },
 
-    handleNotification: function(body) {
-		this.info.log("handleNotification()");
-        const characteristic = utils.getCharacteristic(this.homebridgeService, body.characteristic);
-        if (!characteristic) {
-            this.log("Encountered unknown characteristic when handling notification (or characteristic which wasn't added to the service): " + body.characteristic);
-            return;
-        }
-
-        let value = body.value;
-		this.log.info("Received update for characteristic [", body.characteristic, "] = [", body.value, "]");
-		this.info.log("Updating '" + body.characteristic + "' to new value: " + body.value);
-        characteristic.updateValue(value);
-    },
-
     getSensorReading: function (callback) {
-        if (!this.statusCache.shouldQuery()) {
-			this.log.info("Returning cached values rather than pulling fresh data")
-			
-			const x1 = this.homebridgeService.getCharacteristic(Characteristic.ChargingState).value;
-
-			const x2 = this.homebridgeService.getCharacteristic(Characteristic.BatteryLevel).value;
-
-			const value = str(x1) + "," + str(x2);
-
-            if (this.debug)
-                this.log(`getSensorReading() returning cached value ${value}${this.statusCache.isInfinite()? " (infinite cache)": ""}`);
-
-			log.info("Returning value [", value, "] from cache")
-            callback(null, value);
-            return;
-        }
-
+		log.info("getSensorReading -> enter");	
         http.httpRequest(this.getUrl, (error, response, body) => {
             if (this.pullTimer)
                 this.pullTimer.resetTimer();
@@ -187,7 +128,6 @@ HTTP_TESLA_GATEWAY.prototype = {
                     this.log("Status is currently at %s", sensorValue);
 
 				this.log.info("Retrieved [", sensorValue, "] from proxy service")
-                this.statusCache.queried();
                 callback(null, sensorValue);
             }
         });
