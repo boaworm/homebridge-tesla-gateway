@@ -78,9 +78,13 @@ function HTTP_TESLA_GATEWAY(log, config) {
         this.pullTimer = new PullTimer(log, config.pullInterval, this.getSensorReading.bind(this), value => {
 			// Value should be 1,100
 			this.log.info("Read this value from proxy:", value)
+
+
 			let chargeStateValue = value.split(',')[0]
 			this.log.info("Setting ChargingState to", chargeStateValue)
             this.homebridgeService.setCharacteristic(Characteristic.ChargingState, chargeStateValue);
+
+
 			let batteryLevelValue = value.split(',')[1]
 			this.log.info("Received BatteryLevel [", batteryLevelValue, "] from gateway")
 			let batteryLevelFloat = (batteryLevelValue / 100) - 0.01
@@ -148,13 +152,13 @@ HTTP_TESLA_GATEWAY.prototype = {
         }
 
         let value = body.value;
+		this.log.info("Received update for characteristic [", body.characteristic, "] = [", body.value, "]");
 		/*
         if (body.characteristic === "CurrentStatus" && this.unit === TemperatureUnit.Fahrenheit)
             value = (value - 32) / 1.8;
 		*/
 
-        if (this.debug)
-            this.log("Updating '" + body.characteristic + "' to new value: " + body.value);
+		this.info.log("Updating '" + body.characteristic + "' to new value: " + body.value);
         characteristic.updateValue(value);
     },
 
