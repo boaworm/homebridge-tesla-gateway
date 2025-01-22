@@ -162,9 +162,12 @@ HTTP_TESLA_GATEWAY.prototype = {
         if (!this.statusCache.shouldQuery()) {
 			this.log.info("Returning cached values rather than pulling fresh data")
 			
+			const x1 = this.homebridgeService.getCharacteristic(Characteristic.ChargingState).value;
 
-			const value = str(this.homebridgeService.getCharacteristic(Characteristic.ChargingState).value) + "," +
-            	str(this.homebridgeService.getCharacteristic(Characteristic.BatteryLevel).value)
+			const x2 = this.homebridgeService.getCharacteristic(Characteristic.BatteryLevel).value;
+
+			const value = str(x1) + "," + str(x2);
+
             if (this.debug)
                 this.log(`getSensorReading() returning cached value ${value}${this.statusCache.isInfinite()? " (infinite cache)": ""}`);
 
