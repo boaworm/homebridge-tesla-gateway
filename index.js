@@ -43,7 +43,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
     }
 
     this.statusCache = new Cache(config.statusCache, 0);
-    this.statusPattern = /(\d),([0-9]{1,3})/;
+    this.statusPattern = /(\d,[0-9]{1,3})/;
     try {
         if (config.statusPattern)
             this.statusPattern = configParser.parsePattern(config.statusPattern);
