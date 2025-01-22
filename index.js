@@ -27,6 +27,9 @@ function HTTP_TESLA_GATEWAY(log, config) {
     this.name = config.name;
     this.debug = config.debug || true;
 
+	this.BatteryLevel = null;
+	this.ChargingState = null;
+
     if (config.getUrl) {
         try {
             this.getUrl = configParser.parseUrlProperty(config.getUrl);
@@ -86,8 +89,10 @@ HTTP_TESLA_GATEWAY.prototype = {
     },
 
     getServices: function () {
-        if (!this.homebridgeService)
+        if (!this.homebridgeService){
+			log.error("Failed to read homebridgeService, exiting");
             return [];
+		}
 
         const informationService = new Service.AccessoryInformation();
 
@@ -97,9 +102,50 @@ HTTP_TESLA_GATEWAY.prototype = {
             .setCharacteristic(Characteristic.SerialNumber, "BOA02")
             .setCharacteristic(Characteristic.FirmwareRevision, packageJSON.version);
 
-        return [informationService, this.homebridgeService];
+		this.BatteryService = new Service.BatteryService(this.name);
+		this._getStatus(function(){})
+
+		setInterval(function(){
+			this._getStatus(function() {})
+		}.bind(this), 15 * 1000);
+
+        return [informationService, this.BatteryService, this.homebridgeService];
     },
 
+	_httpRequest: function (url, callback){
+
+		request({
+			url: url,
+			body: null,
+			method: 'GET',
+			timeout: this.timeout
+		},
+		function(error, response, body){
+			callback(error, response, body)
+		})
+
+	},
+
+	_getStatus: function(callback){
+
+		const url = this.getUrl;
+		this.log.info("Processing with URL = ", url);
+
+		this._httpRequest(url, function(error,response, responseBody){
+			if(error){
+
+				this.log.error("Error!");
+				callback(error);
+			}else{
+				this.log.info("Reponse = ", response);
+				this.log.info("ResponseBody = ", responseBody);
+
+			}
+
+		}.bind(this))
+	},
+
+	/*
     getSensorReading: function (callback) {
 		log.info("getSensorReading -> enter");	
         http.httpRequest(this.getUrl, (error, response, body) => {
@@ -133,4 +179,5 @@ HTTP_TESLA_GATEWAY.prototype = {
         });
     },
 
+	*/
 };
