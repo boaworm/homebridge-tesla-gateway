@@ -58,20 +58,14 @@ function HTTP_TESLA_GATEWAY(log, config) {
             this.log.warn("Property 'patternGroupToExtract' must be a number! Using default value!");
     }
 
-    this.homebridgeService = new Service.Battery(this.name);
-    this.homebridgeService.getCharacteristic(Characteristic.BatteryLevel)
-        .setProps({
-                    minValue: 0,
-                    maxValue: 100
-                })
-        .on("get", this.getSensorReading.bind(this));
+    this.homebridgeService = new Service.Battery(this.name, "Powerwall");
+    let blc = this.homebridgeService.getCharacteristic(Characteristic.BatteryLevel);
+    blc.setProps({ minValue: 0, maxValue: 100 });
+    blc.on("get", this.getSensorReading.bind(this));
 
-	this.homebridgeService.getCharacteristic(Characteristic.ChargingState)
-		.setProps({
-					minValue: 0,
-					maxValue: 1
-				})
-        .on("get", this.getSensorReading.bind(this));
+	let csc = this.homebridgeService.getCharacteristic(Characteristic.ChargingState);
+	csc.setProps({ minValue: 0, maxValue: 1 });
+    csc.on("get", this.getSensorReading.bind(this));
 
     /** @namespace config.pullInterval */
     if (config.pullInterval) {
@@ -83,7 +77,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 			let chargeStateValue = value.split(',')[0]
 			this.log.info("Setting ChargingState to", chargeStateValue)
             //this.homebridgeService.setCharacteristic(Characteristic.ChargingState, chargeStateValue);
-			const csc = utils.getCharacteristic(this.homebridgeService, Characteristic.ChargingLevel);
+			//const csc = utils.getCharacteristic(this.homebridgeService, Characteristic.ChargingLevel);
 			if(!csc)
 				log.error("Unable to get ChargingLevel characteristic")
 			else
@@ -95,8 +89,10 @@ function HTTP_TESLA_GATEWAY(log, config) {
 			if(batteryLevelFloat <= 0.01)
 				batteryLevelFoat = 0.01
 			this.log.info("Setting BatteryLevel to", batteryLevelFloat)
+
+
             //this.homebridgeService.setCharacteristic(Characteristic.BatteryLevel, batteryLevelValue);
-			const blc = utils.getCharacteristic(this.homebridgeService, Characteristic.BatteryLevel);
+			//const blc = utils.getCharacteristic(this.homebridgeService, Characteristic.BatteryLevel);
 			if(!blc)
 				log.error("Unable to get BatteryLevel characteristic");
 			else
