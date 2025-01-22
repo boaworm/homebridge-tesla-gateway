@@ -4,6 +4,12 @@ This [Homebridge](https://github.com/nfarina/homebridge) plugin can be used to d
 BatteryLevel = Total charge in connected Powerwall
 ChargingState = Is it pulling from the grid or not (1=Grid online. 0=Grid OFFLINE)
 
+This plugin does not actually connect to the Tesla Gateway. It simply asks a tiny proxy server, which returns the status as a simple string.
+1,100 would represent grid online, 100% charge
+0,30 would represent grid offline, 30% charge
+
+Future versons of this plugin may very well login directly to the gateway, but for now i am using the tesla_powerwall python lib along with Flask to run a small service.
+
 Please note that this is a fork from Supereg's [homebridge-http-temperature-sensor](https://github.com/Supereg/homebridge-http-temperature-sensor), with some modifications.
 1) Generalizing it - making it specific to Tesla Gateway 
 2) Future improvements...
