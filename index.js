@@ -77,9 +77,11 @@ function HTTP_TESLA_GATEWAY(log, config) {
     if (config.pullInterval) {
         this.pullTimer = new PullTimer(log, config.pullInterval, this.getSensorReading.bind(this), value => {
 			// Value should be 1,100
-			chargeStateValue = value.spit(',')[0]
+			chargeStateValue = value.split(',')[0]
+			this.log.info("Setting ChargingState to", chargeStateValue)
             this.homebridgeService.setCharacteristic(Characteristic.ChargingState, chargeStateValue);
 			batteryLevelValue = value.split(',')[1]
+			this.log.info("Setting BatteryLevel to", batteryLevelValue)
             this.homebridgeService.setCharacteristic(Characteristic.BatteryLevel, batteryLevelValue);
 
         });
