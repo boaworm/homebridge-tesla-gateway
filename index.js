@@ -148,7 +148,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 				this.log.info("BatteryLevel = ", this.batteryLevel);
 
 				this.BatteryService.getCharacteristic(Characteristic.BatteryLevel).updateValue(this.batteryLevel);
-				this.BatteryService.getCharacteristic(Characteristic.ChargingStatus).updateValue(this.gridStatus);
+				this.BatteryService.getCharacteristic(Characteristic.ChargingState).updateValue(this.gridStatus);
 
 				if(this.batteryLevel <= 30)
 					this.BatteryService.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
