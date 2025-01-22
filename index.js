@@ -42,7 +42,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
         return;
     }
 
-    this.statusCache = new Cache(config.statusCache, 0);
+    this.httpResponseCache = new Cache(config.statusCache, 0);
     this.statusPattern = /(\d,[0-9]{1,3})/;
     try {
         if (config.statusPattern)
@@ -83,7 +83,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
             this.homebridgeService.setCharacteristic(Characteristic.ChargingState, chargeStateValue);
 			let batteryLevelValue = value.split(',')[1]
 			this.log.info("Received BatteryLevel [", batteryLevelValue, "] from gateway")
-			let batteryLevelFloat = (batteryLevelValue / 100) - 0.1
+			let batteryLevelFloat = (batteryLevelValue / 100) - 0.01
 			if(batteryLevelFloat <= 0.01)
 				batteryLevelFoat = 0.01
 			this.log.info("Setting BatteryLevel to", batteryLevelFloat)
@@ -160,10 +160,15 @@ HTTP_TESLA_GATEWAY.prototype = {
 
     getSensorReading: function (callback) {
         if (!this.statusCache.shouldQuery()) {
+			this.log.info("Returning cached values rather than pulling fresh data")
             const value = this.homebridgeService.getCharacteristic(Characteristic.BatteryLevel).value;
+
+			const value = str(this.homebridgeService.getCharacteristic(Characteristic.ChargeState).value) + "," +
+            	str(this.homebridgeService.getCharacteristic(Characteristic.BatteryLevel).value)
             if (this.debug)
                 this.log(`getSensorReading() returning cached value ${value}${this.statusCache.isInfinite()? " (infinite cache)": ""}`);
 
+			log.info("Returning value [", value, "] from cache")
             callback(null, value);
             return;
         }
@@ -193,6 +198,7 @@ HTTP_TESLA_GATEWAY.prototype = {
                 if (this.debug)
                     this.log("Status is currently at %s", sensorValue);
 
+				this.log.info("Retrieved [", sensorValue, "] from proxy service")
                 this.statusCache.queried();
                 callback(null, sensorValue);
             }
