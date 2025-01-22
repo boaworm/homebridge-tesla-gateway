@@ -138,9 +138,24 @@ HTTP_TESLA_GATEWAY.prototype = {
 				this.log.error("Error!");
 				callback(error);
 			}else{
-				this.log.info("Reponse = ", response);
+				// this.log.info("Reponse = ", response); // lots of data here
 				this.log.info("ResponseBody = ", responseBody);
 
+				this.gridStatus = responseBody.split(',')[0];
+				this.batteryLevel = responseBody.split(',')[1];
+
+				this.log.info("Grid status = ", this.gridStatus);
+				this.log.info("BatteryLevel = ", this.batteryLevel);
+
+				this.BatteryService.getCharacteristic(Characteristic.BatteryLevel).updateValue(this.batteryLevel);
+				this.BatteryService.getCharacteristic(Characteristic.ChargingStatus).updateValue(this.gridStatus);
+
+				if(this.batteryLevel <= 30)
+					this.BatteryService.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
+				else
+					this.BatteryService.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
+
+				callback();
 			}
 
 		}.bind(this))
