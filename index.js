@@ -83,7 +83,9 @@ function HTTP_TESLA_GATEWAY(log, config) {
             this.homebridgeService.setCharacteristic(Characteristic.ChargingState, chargeStateValue);
 			let batteryLevelValue = value.split(',')[1]
 			this.log.info("Received BatteryLevel [", batteryLevelValue, "] from gateway")
-			let batteryLevelFloat = batteryLevelValue / 100
+			let batteryLevelFloat = (batteryLevelValue / 100) - 0.1
+			if(batteryLevelFloat <= 0.01)
+				batteryLevelFoat = 0.01
 			this.log.info("Setting BatteryLevel to", batteryLevelFloat)
             this.homebridgeService.setCharacteristic(Characteristic.BatteryLevel, batteryLevelValue);
 
