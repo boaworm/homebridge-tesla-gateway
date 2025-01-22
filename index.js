@@ -129,7 +129,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 	_getStatus: function(callback){
 
-		const url = this.getUrl;
+		const url = this.getUrl.url;
 		this.log.info("Processing with URL = ", url);
 
 		this._httpRequest(url, function(error,response, responseBody){
