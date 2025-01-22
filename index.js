@@ -32,6 +32,8 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	this.BatteryLevel = null;
 	this.ChargingState = null;
 
+	this.pollingIntervalSecs = 15;
+
     if (config.getUrl) {
         try {
             this.getUrl = configParser.parseUrlProperty(config.getUrl);
@@ -75,6 +77,10 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	*/
 
     /** @namespace config.pullInterval */
+	if(config.pollInterval){
+		this.pollIntervalSecs = config.pullInterval / 1000;
+		this.log.info("Found config.pullInterval, polling every ", this.pollIntervalSecs, " secs");
+	}
 	/*
     if (config.pullInterval) {
         this.pullTimer = new PullTimer(log, config.pullInterval, this.getSensorReading.bind(this), value => {
@@ -108,7 +114,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 		setInterval(function(){
 			this._getStatus(function() {})
-		}.bind(this), 15 * 1000);
+		}.bind(this), this.pollIntervalSecs * 1000);
 
         return [informationService, this.BatteryService];
     },
