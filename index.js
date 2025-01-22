@@ -84,17 +84,23 @@ function HTTP_TESLA_GATEWAY(log, config) {
 			this.log.info("Setting ChargingState to", chargeStateValue)
             //this.homebridgeService.setCharacteristic(Characteristic.ChargingState, chargeStateValue);
 			const csc = utils.getCharacteristic(this.homebridgeService, Characteristic.ChargingLevel);
-			csc.updateValue(chargeStateValue)
+			if(!csc)
+				log.error("Unable to get ChargingLevel characteristic")
+			else:
+				csc.updateValue(chargeStateValue)
 
 			let batteryLevelValue = value.split(',')[1]
-			this.log.info("Received BatteryLevel [", batteryLevelValue, "] from gateway")
-			let batteryLevelFloat = (batteryLevelValue / 100) - 0.01
+			this.log.info("Received BatteryLevel [", batteryLevelValue, "] from gateway");
+			let batteryLevelFloat = (batteryLevelValue / 100) - 0.01;
 			if(batteryLevelFloat <= 0.01)
 				batteryLevelFoat = 0.01
 			this.log.info("Setting BatteryLevel to", batteryLevelFloat)
             //this.homebridgeService.setCharacteristic(Characteristic.BatteryLevel, batteryLevelValue);
 			const blc = utils.getCharacteristic(this.homebridgeService, Characteristic.BatteryLevel);
-			blc.updateValue(batteryLevelValue)
+			if(!blc)
+				log.error("Unable to get BatteryLevel characteristic");
+			else
+				blc.updateValue(batteryLevelValue)
 
         });
         this.pullTimer.start();
