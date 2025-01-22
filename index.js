@@ -32,7 +32,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	this.BatteryLevel = null;
 	this.ChargingState = null;
 
-	this.pollingInterval = 15000; // Default
+	this.pollingInterval = 150000; // Default, 2 and a half minutes
 
     if (config.getUrl) {
         try {
@@ -64,32 +64,6 @@ function HTTP_TESLA_GATEWAY(log, config) {
         else
             this.log.warn("Property 'patternGroupToExtract' must be a number! Using default value!");
     }
-
-	/*
-    this.homebridgeService = new Service.Battery(this.name, "Powerwall");
-    let blc = this.homebridgeService.getCharacteristic(Characteristic.BatteryLevel);
-    blc.setProps({ minValue: 0, maxValue: 100 });
-    blc.on("get", this.getSensorReading.bind(this));
-
-	let csc = this.homebridgeService.getCharacteristic(Characteristic.ChargingState);
-	csc.setProps({ minValue: 0, maxValue: 1 });
-    csc.on("get", this.getSensorReading.bind(this));
-	*/
-
-    /** @namespace config.pullInterval */
-	if(config.pollInterval){
-		this.pollingInterval = config.pullInterval;
-		this.log.info("Found config.pullInterval, polling every ", this.pollingInterval, " millis");
-	}
-	/*
-    if (config.pullInterval) {
-        this.pullTimer = new PullTimer(log, config.pullInterval, this.getSensorReading.bind(this), value => {
-			getSensorReading();
-        });
-        this.pullTimer.start();
-    }
-	*/
-
 
 } // End of init function
 
