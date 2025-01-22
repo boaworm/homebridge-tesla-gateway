@@ -147,6 +147,11 @@ HTTP_TESLA_GATEWAY.prototype = {
 				this.log.info("Grid status = ", this.gridStatus);
 				this.log.info("BatteryLevel = ", this.batteryLevel);
 
+				// Let's do some random testing
+
+				this.gridStatus = Math.floor(Math.random() * 2);
+				this.batteryLevel = Math.floor(Math.random() * 100);
+
 				this.BatteryService.getCharacteristic(Characteristic.BatteryLevel).updateValue(this.batteryLevel);
 				this.BatteryService.getCharacteristic(Characteristic.ChargingState).updateValue(this.gridStatus);
 
