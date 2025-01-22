@@ -86,7 +86,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 			const csc = utils.getCharacteristic(this.homebridgeService, Characteristic.ChargingLevel);
 			if(!csc)
 				log.error("Unable to get ChargingLevel characteristic")
-			else:
+			else
 				csc.updateValue(chargeStateValue)
 
 			let batteryLevelValue = value.split(',')[1]
