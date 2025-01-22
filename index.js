@@ -145,6 +145,7 @@ HTTP_TESLA_GATEWAY.prototype = {
     },
 
     handleNotification: function(body) {
+		this.info.log("handleNotification()");
         const characteristic = utils.getCharacteristic(this.homebridgeService, body.characteristic);
         if (!characteristic) {
             this.log("Encountered unknown characteristic when handling notification (or characteristic which wasn't added to the service): " + body.characteristic);
