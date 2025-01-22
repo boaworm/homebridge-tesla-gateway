@@ -94,7 +94,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 
     getServices: function () {
         if (!this.homebridgeService){
-			log.error("Failed to read homebridgeService, exiting");
+			this.log.error("Failed to read homebridgeService, exiting");
             return [];
 		}
 
