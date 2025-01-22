@@ -75,9 +75,6 @@ function HTTP_TESLA_GATEWAY(log, config) {
 
 
 			let chargeStateValue = value.split(',')[0]
-			//this.log.info("Setting ChargingState to", chargeStateValue)
-            //this.homebridgeService.setCharacteristic(Characteristic.ChargingState, chargeStateValue);
-			//const csc = utils.getCharacteristic(this.homebridgeService, Characteristic.ChargingLevel);
 			if(!csc)
 				log.error("Unable to get ChargingLevel characteristic")
 			else{
@@ -106,30 +103,9 @@ function HTTP_TESLA_GATEWAY(log, config) {
         this.pullTimer.start();
     }
 
-    /** @namespace config.notificationPassword */
-    /** @namespace config.notificationID */
     notifications.enqueueNotificationRegistrationIfDefined(api, log, config.notificationID, config.notificationPassword, this.handleNotification.bind(this));
 
-    /** @namespace config.mqtt */
-    if (config.mqtt) {
-        let options;
-        try {
-            options = configParser.parseMQTTOptions(config.mqtt);
-        } catch (error) {
-            this.log.error("Error occurred while parsing MQTT property: " + error.message);
-            this.log.error("MQTT will not be enabled!");
-        }
-
-        if (options) {
-            try {
-                this.mqttClient = new MQTTClient(this.homebridgeService, options, this.log);
-                this.mqttClient.connect();
-            } catch (error) {
-                this.log.error("Error occurred creating MQTT client: " + error.message);
-            }
-        }
-    }
-}
+} // End of init function
 
 HTTP_TESLA_GATEWAY.prototype = {
 
@@ -163,11 +139,6 @@ HTTP_TESLA_GATEWAY.prototype = {
 
         let value = body.value;
 		this.log.info("Received update for characteristic [", body.characteristic, "] = [", body.value, "]");
-		/*
-        if (body.characteristic === "CurrentStatus" && this.unit === TemperatureUnit.Fahrenheit)
-            value = (value - 32) / 1.8;
-		*/
-
 		this.info.log("Updating '" + body.characteristic + "' to new value: " + body.value);
         characteristic.updateValue(value);
     },
