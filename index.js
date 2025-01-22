@@ -25,7 +25,7 @@ module.exports = function (homebridge) {
 function HTTP_TESLA_GATEWAY(log, config) {
     this.log = log;
     this.name = config.name;
-    this.debug = config.debug || false;
+    this.debug = config.debug || true;
 
     if (config.getUrl) {
         try {
@@ -42,7 +42,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
         return;
     }
 
-    this.httpResponseCache = new Cache(config.statusCache, 0);
+    this.statusCache = new Cache(config.statusCache, 0);
     this.statusPattern = /(\d,[0-9]{1,3})/;
     try {
         if (config.statusPattern)
