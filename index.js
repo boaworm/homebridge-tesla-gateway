@@ -71,17 +71,21 @@ function HTTP_TESLA_GATEWAY(log, config) {
     if (config.pullInterval) {
         this.pullTimer = new PullTimer(log, config.pullInterval, this.getSensorReading.bind(this), value => {
 			// Value should be 1,100
-			this.log.info("Read this value from proxy:", value)
+			this.log.info("Read this value from web proxy:", value)
 
 
 			let chargeStateValue = value.split(',')[0]
-			this.log.info("Setting ChargingState to", chargeStateValue)
+			//this.log.info("Setting ChargingState to", chargeStateValue)
             //this.homebridgeService.setCharacteristic(Characteristic.ChargingState, chargeStateValue);
 			//const csc = utils.getCharacteristic(this.homebridgeService, Characteristic.ChargingLevel);
 			if(!csc)
 				log.error("Unable to get ChargingLevel characteristic")
-			else
-				csc.updateValue(chargeStateValue)
+			else{
+				const x = Math.floor(Math.random() * 2);
+				csc.updateValue(x)
+				this.log.info("Set ChargingLevel to ", x);
+				//csc.updateValue(chargeStateValue)
+			}
 
 			let batteryLevelValue = value.split(',')[1]
 			this.log.info("Received BatteryLevel [", batteryLevelValue, "] from gateway");
