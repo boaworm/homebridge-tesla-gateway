@@ -33,7 +33,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 
 	this.BatteryLevel = null;
 	this.ChargingState = null;
-	this.authToken = "you-have-to-initialize-token";
+	this.authToken = null;
 
 	this.pollingInterval = 150000; // Default, 2 and a half minutes...
 	
@@ -87,6 +87,12 @@ HTTP_TESLA_GATEWAY.prototype = {
     },
 
 	_getAuthenticateAsync: async function(){
+
+		if(this.authToken != null){
+			this.log.info("Already have an auth token (starting with", this.authToken.substring(0.10), ". Not getting a new one yet");
+			return;
+		}
+
 		this.log.info("Entering _getAuthenticateAsync()");
 		let myUrl = this.getUrl.url + "/login/Basic";
 		this.log.info("Using URL:", myUrl);
@@ -162,7 +168,7 @@ try{
 	},
 
 	_getDataFromEndpointAsync: async function(serviceName){
-		this.log.info("Getting data from endpoint",serviceName,"using authToken",this.authToken);
+		this.log.info("Getting data from endpoint",serviceName,"using authToken",this.authToken.substring(0,10),"...");
 		let myUrl = this.getUrl.url + "/" + serviceName;
 		const responsePromise = fetch(myUrl, {
 			method: "GET",
