@@ -142,8 +142,9 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 	},
 
-	thisFunction(){
+	thisFunction: function(callback){
 		this.log.info("this one?");
+		return "test";
 	},
 
 	_getStatusFromGateway: async function(callback){
