@@ -1,7 +1,9 @@
 {
   "name": "homebridge-tesla-gateway",
+  "displayName": "Tesla Gateway Plugin",
   "version": "0.0.1",
-  "description": "Http Tesla Gateway for Homebridge",
+  "description": "Tesla Gateway Plugin for Homebridge. Creates an accessory with two Characteristics. Battery charge level (0-100) and Grid Status (1=online, 0=offline)",
+  "author": "Henrik Thorburn",
   "license": "ISC",
   "keywords": [
     "homebridge-plugin"
@@ -9,6 +11,8 @@
   "scripts": {
     "test": "echo no test specified"
   },
+  "main": "dist/index.js",
+  "homepage": "https://github.com/boaworm/homebridge-tesla-gateway/blob/main/README.md",
   "repository": {
     "type": "git",
     "url": "https://github.com/boaworm/homebridge-tesla-gateway"
