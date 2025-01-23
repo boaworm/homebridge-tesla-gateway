@@ -84,6 +84,28 @@ HTTP_TESLA_GATEWAY.prototype = {
         callback();
     },
 
+	_authenticateAsync: async function(){
+		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
+		const responsePromise = fetch(this.getUrl + "/login/Basic", {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json",
+			},  
+			body: JSON.stringify({
+				username: "customer",  // Tesla account username
+				password: this.gatewayPassword,  // Tesla account password
+			})  
+		}); 
+
+		return responsePromise
+			.then( (responseData) => responseData.json())
+			.then( (responseJson) => {
+				this.authToken = responseJson.token;
+				return authToken
+			}); 	
+	},
+
+
     getServices: function () {
         const informationService = new Service.AccessoryInformation();
 
@@ -120,32 +142,10 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 	},
 
-	_authenticateAsync: async function(){
-		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
-		const responsePromise = fetch(this.getUrl + "/login/Basic", {
-			method: 'POST',
-			headers: {
-				"Content-Type": "application/json",
-			},  
-			body: JSON.stringify({
-				username: "customer",  // Tesla account username
-				password: this.gatewayPassword,  // Tesla account password
-			})  
-		}); 
-
-		return responsePromise
-			.then( (responseData) => responseData.json())
-			.then( (responseJson) => {
-				this.authToken = responseJson.token;
-				return authToken
-			}); 	
-	},
-
 	_getStatusFromGateway: async function(callback){
 		// Fill in stuff here
 	
-		//const token = await _authenticateAsync();
-		const token = _authenticateAsync();
+		const token = await _authenticateAsync();
 		this.log.info("*** Token", token.substring(0,10), "...");
 	},
 
