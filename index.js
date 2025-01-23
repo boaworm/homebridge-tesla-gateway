@@ -164,13 +164,18 @@ try{
 
 	_getGridStatus: async function(){
 		const body = await this._getDataFromEndpointAsync("system_status/grid_status");
-		return body.grid_status;
+		if(body==null){
+			this.log.error("Got null when trying to get grid status");
+			return "-1";
+		}else{
+			return body.grid_status;
+		}
 	},
 
 	_getDataFromEndpointAsync: async function(serviceName){
 		if(this.authToken == null){
 			this.log.error("No authToken - ignoring request to pull from ",serviceName);
-			return;
+			return null;
 		}
 
 		this.log.info("Getting data from endpoint",serviceName,"using authToken",this.authToken.substring(0,10),"...");
