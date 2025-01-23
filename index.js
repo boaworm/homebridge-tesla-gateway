@@ -107,6 +107,7 @@ try{
 			.then( (responseData) => responseData.json())
 			.then( (responseJson) => {
 				this.authToken = responseJson.token;
+				this.log.info("responseJson=", responseJson);
 				this.log.info("Got a token!:", this.authToken);
 				return this.authToken
 			}); 	
