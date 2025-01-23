@@ -122,8 +122,11 @@ try{
 			.then( (responseData) => responseData.json())
 			.then( (responseJson) => {
 				this.authToken = responseJson.token;
-				// this.log.info("responseJson=", responseJson);
-				this.log.info("Got a token:", this.authToken.substring(0,10));
+				if(this.authToken != null){
+					this.log.info("Got a token:", this.authToken.substring(0,10));
+				}else{
+					this.log.error("Tried to authenticate, but got null");
+				}
 				return this.authToken
 			}); 	
 }catch(error){
