@@ -1,7 +1,6 @@
 "use strict";
 
 let Service, Characteristic, api;
-import { Agent, setGlobalDispatcher } from 'undici'
 
 const _http_base = require("homebridge-http-base");
 const http = _http_base.http;
@@ -23,16 +22,17 @@ module.exports = function (homebridge) {
     api = homebridge;
 
     homebridge.registerAccessory("homebridge-tesla-gateway", "HTTP-TESLA-GATEWAY", HTTP_TESLA_GATEWAY);
+	import { Agent, setGlobalDispatcher } from 'undici'
+
+
+	const agent = new Agent({
+	  connect: {
+		rejectUnauthorized: false
+	  }
+	})
+	setGlobalDispatcher(agent)
+
 };
-
-
-const agent = new Agent({
-  connect: {
-    rejectUnauthorized: false
-  }
-})
-setGlobalDispatcher(agent)
-
 function HTTP_TESLA_GATEWAY(log, config) {
     this.log = log;
     this.name = config.name;
