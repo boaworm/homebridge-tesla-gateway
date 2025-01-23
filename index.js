@@ -35,7 +35,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 
 	this.pollingInterval = 150000; // Default, 2 and a half minutes...
 	
-	this.log.info("password = ", config.gatewayPassword);
+	this.log.info("password =", config.gatewayPassword);
 	if(config.gatewayPassword){
 		this.gatewayPassword = config.gatewayPassword;
 	}else{
@@ -85,8 +85,11 @@ HTTP_TESLA_GATEWAY.prototype = {
     },
 
 	_getAuthenticateAsync: async function(){
+		this.log("Entering _getAuthenticateAsync()");
+		myUrl = this.getUrl.url + "/login/Basic";
+		this.log("Using URL:", myUrl);
 		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
-		const responsePromise = fetch(this.getUrl + "/login/Basic", {
+		const responsePromise = fetch(myUrl, {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json",
@@ -143,16 +146,9 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 	},
 
-	thisFunction: function(callback){
-		this.log.info("this one?");
-		return "test";
-	},
-
 	_getStatusFromGateway: async function(callback){
 		// Fill in stuff here
-	
-		const token = this.thisFunction();
-		//const token = await _getAuthenticateAsync();
+		const token = await this._getAuthenticateAsync();
 		this.log.info("*** Token", token.substring(0,10), "...");
 	},
 
