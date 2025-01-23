@@ -98,7 +98,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 		if(this.authToken != null){
 			this.log.info("Already have an auth token (starting with", this.authToken.substring(0,10), ". Not getting a new one yet");
-			return;
+			return this.authToken;
 		}
 
 		this.log.info("Entering _getAuthenticateAsync()");
