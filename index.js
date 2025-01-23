@@ -151,8 +151,12 @@ try{
 
 	_getStatusFromGateway: async function(callback){
 		// Fill in stuff here
-		const token = await this._getAuthenticateAsync();
-		this.log.info("*** Token", token.substring(0,10), "...");
+		try{
+			const token = await this._getAuthenticateAsync();
+			this.log.info("*** Token", token.substring(0,10), "...");
+		}catch(error){
+			this.log.error("Exception:", error);
+		}
 	},
 
 	_getStatus: function(callback){
