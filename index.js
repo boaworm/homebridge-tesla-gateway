@@ -151,7 +151,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 	_getStatusFromGateway: async function(callback){
 		// Fill in stuff here
 	
-		const token = thisFunction();
+		const token = this.thisFunction();
 		//const token = await _getAuthenticateAsync();
 		this.log.info("*** Token", token.substring(0,10), "...");
 	},
