@@ -94,9 +94,9 @@ HTTP_TESLA_GATEWAY.prototype = {
             .setCharacteristic(Characteristic.FirmwareRevision, packageJSON.version);
 
 		this.BatteryService = new Service.BatteryService(this.name);
-		this._getStatus(function(){})
-		this._getStatusFromGateway(function(){})
-		this._authenticateAsync(function(){})
+		this._getStatus(function(){});
+		this._getStatusFromGateway(function(){});
+		this._authenticateAsync(function(){});
 
 		setInterval(function(){
 			//this._getStatus(function() {})
