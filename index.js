@@ -221,7 +221,7 @@ try{
 				const gridStatusInt = (gridStatus=="SystemGridConnected") ? 1 : 0;
 				this.log.info("*** Grid Status:", gridStatus, "/", gridStatusInt);
 
-				const batteryLevel = await this._getBatteryChargeLevel();
+				const batteryLevel = Math.floor(await this._getBatteryChargeLevel());
 				this.log.info("*** Battery Level:", batteryLevel);
 
 				// MORE STUFF HERE !!!! 
