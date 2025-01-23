@@ -92,6 +92,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		this.log.info("Using URL:", myUrl);
 		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
 try{
+		this.log.info("trying to log in with password", this.gatewayPassword);
 		const responsePromise = fetch(myUrl, {
 			method: 'POST',
 			headers: {
