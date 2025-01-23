@@ -131,6 +131,8 @@ try{
 		this._getStatus(function(){});
 		this._getAuthenticateAsync(async function(){});
 		this._getStatusFromGateway(async function(){});
+		this._getDataFromEndpointAsync(async function(){});
+		this._getGridStatus(async function(){});
 
 		setInterval(function(){
 			//this._getStatus(function() {})
@@ -154,11 +156,37 @@ try{
 
 	},
 
+	_getGridStatus: async function(){
+		const body = await getDataFromEndpointAsync("system_status/grid_status");
+		return body.grid_status;
+	}
+
+	_getDataFromEndpointAsync(): async function(serviceName){
+		this.log.info("Getting data from endpoint",serviceName,"using authToken",this.authToken);
+		let myUrl = this.getUrl.url + "/" + serviceName;
+		const responsePromise = fetch(myUrl, {
+			method: "GET",
+			headers: {
+				"Authorization": `Bearer ${this.authToken}`, // Use the auth token from login
+			},
+		});
+
+		return responsePromise
+			.then( (responseData) => responseData.json())
+			.then( (responseJson) => {return responseJson});
+	}
+
+
+
 	_getStatusFromGateway: async function(callback){
 		// Fill in stuff here
 		try{
 			const token = await this._getAuthenticateAsync();
 			this.log.info("*** Token", token.substring(0,10), "...");
+
+			const gridStatus = await this._getGridStatus();
+			this.log.info("*** Grid Status:", gridStatus);
+
 		}catch(error){
 			this.log.error("Exception:", error);
 		}
