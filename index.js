@@ -131,7 +131,7 @@ try{
 		this._getStatus(function(){});
 		this._getAuthenticateAsync(async function(){});
 		this._getStatusFromGateway(async function(){});
-		this._getDataFromEndpointAsync(async function(){});
+		this._getDataFromEndpointAsync(async function(serviceName){});
 		this._getGridStatus(async function(){});
 
 		setInterval(function(){
