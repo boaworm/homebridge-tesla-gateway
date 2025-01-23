@@ -115,7 +115,7 @@ try{
 			.then( (responseJson) => {
 				this.authToken = responseJson.token;
 				this.log.info("responseJson=", responseJson);
-				this.log.info("Got a token!:", this.authToken);
+				this.log.info("Got a token!:", this.authToken.substring(0,10));
 				return this.authToken
 			}); 	
 }catch(error){
@@ -139,6 +139,7 @@ try{
 		this._getStatusFromGateway(async function(){});
 		this._getDataFromEndpointAsync(async function(serviceName){});
 		this._getGridStatus(async function(){});
+		this._getBatteryChargeLevel(async function(){});
 
 		setInterval(function(){
 			//this._getStatus(function() {})
@@ -166,10 +167,21 @@ try{
 		const body = await this._getDataFromEndpointAsync("system_status/grid_status");
 		if(body==null){
 			this.log.error("Got null when trying to get grid status");
-			return "-1";
+			return "Undetermined";
 		}else{
 			return body.grid_status;
 		}
+	},
+
+	_getBatteryChargeLevel: async function(){
+		const body = await this._getDataFromEndpointAsync("/system_status/soe");
+		if(body==null){
+			this.log.error("Got null when trying to get battery level");
+			return 0;
+		}else{
+			return body.percentage;
+		}
+	
 	},
 
 	_getDataFromEndpointAsync: async function(serviceName){
@@ -202,6 +214,9 @@ try{
 
 			const gridStatus = await this._getGridStatus();
 			this.log.info("*** Grid Status:", gridStatus);
+
+			//const chargeLevel = await this._getBatteryChargeLevel();
+			//this.log.info("*** Battery Level:", chargeLevel);
 
 		}catch(error){
 			this.log.error("Exception:", error);
