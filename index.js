@@ -31,8 +31,18 @@ function HTTP_TESLA_GATEWAY(log, config) {
 
 	this.BatteryLevel = null;
 	this.ChargingState = null;
+	this.authToken = "you-have-to-initialize-token";
 
 	this.pollingInterval = 150000; // Default, 2 and a half minutes
+	
+	this.log.info("password = ", config.gatewayPassword);
+	if(config.gatewayPassword){
+		this.gatewayPassword = config.gatewayPassword;
+	}else{
+		this.log.warn("gatewayPassword not set, will not be able to authenticate");
+		this.log.warn("Aborting...");
+		return;
+	}
 
     if (config.getUrl) {
         try {
@@ -85,9 +95,12 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 		this.BatteryService = new Service.BatteryService(this.name);
 		this._getStatus(function(){})
+		this._getStatusFromGateway(function(){})
+		this._authenticateAsync(function(){})
 
 		setInterval(function(){
-			this._getStatus(function() {})
+			//this._getStatus(function() {})
+			this._getStatusFromGateway(function() {})
 		}.bind(this), this.pollingInterval);
 
         return [informationService, this.BatteryService];
@@ -105,6 +118,34 @@ HTTP_TESLA_GATEWAY.prototype = {
 			callback(error, response, body)
 		})
 
+	},
+
+	_authenticateAsync: async function(){
+		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
+		const responsePromise = fetch(this.getUrl + "/login/Basic", {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json",
+			},  
+			body: JSON.stringify({
+				username: "customer",  // Tesla account username
+				password: `${gatewayPassword}`,  // Tesla account password
+			})  
+		}); 
+
+		return responsePromise
+			.then( (responseData) => responseData.json())
+			.then( (responseJson) => {
+				this.authToken = responseJson.token;
+				return authToken
+			}); 	
+	},
+
+	_getStatusFromGateway: async function(callback){
+		// Fill in stuff here
+	
+		const token = await _authenticateAsync();
+		this.log.info("*** Token", token.substring(0,10), "...");
 	},
 
 	_getStatus: function(callback){
