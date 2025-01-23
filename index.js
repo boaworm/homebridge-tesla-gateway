@@ -215,10 +215,8 @@ try{
 			.then( (responseJson) => {return responseJson});
 	},
 
-
-
+	// The "main" function
 	_getStatusFromGateway: async function(callback){
-		// Fill in stuff here
 		try{
 			const token = await this._getAuthenticateAsync();
 			this.log.info("*** Token", (token==null) ? "NULL" : token.substring(0,10), "...");
@@ -228,8 +226,10 @@ try{
 				const gridStatus = await this._getGridStatus();
 				this.log.info("*** Grid Status:", gridStatus);
 
-				//const chargeLevel = await this._getBatteryChargeLevel();
-				//this.log.info("*** Battery Level:", chargeLevel);
+				const chargeLevel = await this._getBatteryChargeLevel();
+				this.log.info("*** Battery Level:", chargeLevel);
+
+
 			}else{
 				this.log.error("No token - skipping fetching of status");
 			}
