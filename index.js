@@ -1,6 +1,7 @@
 "use strict";
 
 let Service, Characteristic, api;
+import { Agent, setGlobalDispatcher } from 'undici'
 
 const _http_base = require("homebridge-http-base");
 const http = _http_base.http;
@@ -23,6 +24,14 @@ module.exports = function (homebridge) {
 
     homebridge.registerAccessory("homebridge-tesla-gateway", "HTTP-TESLA-GATEWAY", HTTP_TESLA_GATEWAY);
 };
+
+
+const agent = new Agent({
+  connect: {
+    rejectUnauthorized: false
+  }
+})
+setGlobalDispatcher(agent)
 
 function HTTP_TESLA_GATEWAY(log, config) {
     this.log = log;
@@ -89,16 +98,12 @@ HTTP_TESLA_GATEWAY.prototype = {
 		let myUrl = this.getUrl.url + "/login/Basic";
 		this.log.info("Using URL:", myUrl);
 		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
-		const agent = new https.Agent({
-			rejectUnauthorized: false,
-		});
 try{
 		const responsePromise = fetch(myUrl, {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json",
 			},  
-			agent,
 			body: JSON.stringify({
 				username: "customer",  // Tesla account username
 				password: this.gatewayPassword,  // Tesla account password
