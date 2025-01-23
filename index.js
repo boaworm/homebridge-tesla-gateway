@@ -107,7 +107,7 @@ try{
 			.then( (responseData) => responseData.json())
 			.then( (responseJson) => {
 				this.authToken = responseJson.token;
-				return authToken
+				return this.authToken
 			}); 	
 }catch(error){
 	this.log.error("cought exception:", error);
