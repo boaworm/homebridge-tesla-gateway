@@ -159,7 +159,7 @@ try{
 	_getGridStatus: async function(){
 		const body = await getDataFromEndpointAsync("system_status/grid_status");
 		return body.grid_status;
-	}
+	},
 
 	_getDataFromEndpointAsync(): async function(serviceName){
 		this.log.info("Getting data from endpoint",serviceName,"using authToken",this.authToken);
@@ -174,7 +174,7 @@ try{
 		return responsePromise
 			.then( (responseData) => responseData.json())
 			.then( (responseJson) => {return responseJson});
-	}
+	},
 
 
 
