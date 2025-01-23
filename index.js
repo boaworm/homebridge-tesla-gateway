@@ -161,7 +161,7 @@ try{
 		return body.grid_status;
 	},
 
-	_getDataFromEndpointAsync(): async function(serviceName){
+	_getDataFromEndpointAsync: async function(serviceName){
 		this.log.info("Getting data from endpoint",serviceName,"using authToken",this.authToken);
 		let myUrl = this.getUrl.url + "/" + serviceName;
 		const responsePromise = fetch(myUrl, {
