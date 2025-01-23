@@ -97,7 +97,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 	_getAuthenticateAsync: async function(){
 
 		if(this.authToken != null){
-			this.log.info("Already have an auth token (starting with", this.authToken.substring(0.10), ". Not getting a new one yet");
+			this.log.info("Already have an auth token (starting with", this.authToken.substring(0,10), ". Not getting a new one yet");
 			return;
 		}
 
@@ -221,13 +221,18 @@ try{
 		// Fill in stuff here
 		try{
 			const token = await this._getAuthenticateAsync();
-			this.log.info("*** Token", token.substring(0,10), "...");
+			this.log.info("*** Token", (token==null) ? "NULL" : token.substring(0,10), "...");
 
-			const gridStatus = await this._getGridStatus();
-			this.log.info("*** Grid Status:", gridStatus);
+			if(token != null){
 
-			//const chargeLevel = await this._getBatteryChargeLevel();
-			//this.log.info("*** Battery Level:", chargeLevel);
+				const gridStatus = await this._getGridStatus();
+				this.log.info("*** Grid Status:", gridStatus);
+
+				//const chargeLevel = await this._getBatteryChargeLevel();
+				//this.log.info("*** Battery Level:", chargeLevel);
+			}else{
+				this.log.error("No token - skipping fetching of status");
+			}
 
 		}catch(error){
 			this.log.error("Exception:", error);
