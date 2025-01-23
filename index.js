@@ -89,12 +89,16 @@ HTTP_TESLA_GATEWAY.prototype = {
 		let myUrl = this.getUrl.url + "/login/Basic";
 		this.log.info("Using URL:", myUrl);
 		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
+		const agent = new https.Agent({
+			rejectUnauthorized: false,
+		});
 try{
 		const responsePromise = fetch(myUrl, {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json",
 			},  
+			agent,
 			body: JSON.stringify({
 				username: "customer",  // Tesla account username
 				password: this.gatewayPassword,  // Tesla account password
