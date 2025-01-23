@@ -93,7 +93,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 			}
 		}
 
-		this.log.info("Entering _getAuthenticateAsync()");
+		// this.log.info("Entering _getAuthenticateAsync()");
 		let myUrl = this.getUrl.url + "/login/Basic";
 		this.log.info("Using URL:", myUrl);
 		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
@@ -219,8 +219,7 @@ try{
 				const gridStatus = await this._getGridStatus();
 
 				const gridStatusInt = (gridStatus=="SystemGridConnected") ? 1 : 0;
-				this.log.info("*** Grid Status:", gridStatus);
-				this.log.info("*** Grid Status (int):", gridStatusInt);
+				this.log.info("*** Grid Status:", gridStatus, "/", gridStatusInt);
 
 				const batteryLevel = await this._getBatteryChargeLevel();
 				this.log.info("*** Battery Level:", batteryLevel);
