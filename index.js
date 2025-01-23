@@ -229,7 +229,21 @@ try{
 				const chargeLevel = await this._getBatteryChargeLevel();
 				this.log.info("*** Battery Level:", chargeLevel);
 
+				// MORE STUFF HERE !!!! 
 
+				this.BatteryService.getCharacteristic(Characteristic.BatteryLevel).updateValue(this.batteryLevel);
+				this.BatteryService.getCharacteristic(Characteristic.ChargingState).updateValue(this.gridStatus);
+
+				if(this.batteryLevel <= 30){
+					this.BatteryService.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
+				} else {
+					this.BatteryService.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
+				}
+
+				callback();
+
+
+				// END OF MORE STUFF HERE !!!! 
 			}else{
 				this.log.error("No token - skipping fetching of status");
 			}
