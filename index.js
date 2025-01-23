@@ -35,7 +35,15 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	this.ChargingState = null;
 	this.authToken = null;
 
-	this.pollingInterval = 150000; // Default, 2 and a half minutes...
+
+	this.pollingInterval = 60000; // Default, 2 and a half minutes...
+	//
+	if(config.pullInterval){
+		this.log.info("Read \"pullInterval\" =",config.pullInterval," from config, applying");
+		this.pollingInterval = config.pullInterval;
+	}else{
+		this.log.info("No \"pullInterval\" set - defaulting to ", this.pollingInterval);
+	}
 	
 	this.log.info("password =", config.gatewayPassword);
 	if(config.gatewayPassword){
@@ -114,8 +122,8 @@ try{
 			.then( (responseData) => responseData.json())
 			.then( (responseJson) => {
 				this.authToken = responseJson.token;
-				this.log.info("responseJson=", responseJson);
-				this.log.info("Got a token!:", this.authToken.substring(0,10));
+				// this.log.info("responseJson=", responseJson);
+				this.log.info("Got a token:", this.authToken.substring(0,10));
 				return this.authToken
 			}); 	
 }catch(error){
