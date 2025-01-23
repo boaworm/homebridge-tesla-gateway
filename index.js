@@ -157,7 +157,7 @@ try{
 	},
 
 	_getGridStatus: async function(){
-		const body = await _getDataFromEndpointAsync("system_status/grid_status");
+		const body = await this._getDataFromEndpointAsync("system_status/grid_status");
 		return body.grid_status;
 	},
 
