@@ -119,6 +119,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		this._getStatus(function(){});
 		this._getAuthenticateAsync(async function(){});
 		this._getStatusFromGateway(async function(){});
+		this.thisFunction(function(callback){});
 
 		setInterval(function(){
 			//this._getStatus(function() {})
