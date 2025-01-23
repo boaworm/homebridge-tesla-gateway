@@ -86,7 +86,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 	_getAuthenticateAsync: async function(){
 		this.log("Entering _getAuthenticateAsync()");
-		myUrl = this.getUrl.url + "/login/Basic";
+		let myUrl = this.getUrl.url + "/login/Basic";
 		this.log("Using URL:", myUrl);
 		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
 		const responsePromise = fetch(myUrl, {
@@ -122,7 +122,6 @@ HTTP_TESLA_GATEWAY.prototype = {
 		this._getStatus(function(){});
 		this._getAuthenticateAsync(async function(){});
 		this._getStatusFromGateway(async function(){});
-		this.thisFunction(function(callback){});
 
 		setInterval(function(){
 			//this._getStatus(function() {})
