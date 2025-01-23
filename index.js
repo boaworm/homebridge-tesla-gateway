@@ -33,7 +33,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	this.ChargingState = null;
 	this.authToken = "you-have-to-initialize-token";
 
-	this.pollingInterval = 150000; // Default, 2 and a half minutes
+	this.pollingInterval = 150000; // Default, 2 and a half minutes...
 	
 	this.log.info("password = ", config.gatewayPassword);
 	if(config.gatewayPassword){
