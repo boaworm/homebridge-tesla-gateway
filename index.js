@@ -129,7 +129,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 			},  
 			body: JSON.stringify({
 				username: "customer",  // Tesla account username
-				password: `${gatewayPassword}`,  // Tesla account password
+				password: this.gatewayPassword,  // Tesla account password
 			})  
 		}); 
 
