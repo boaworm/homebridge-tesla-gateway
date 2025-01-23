@@ -81,8 +81,16 @@ HTTP_TESLA_GATEWAY.prototype = {
 	_getAuthenticateAsync: async function(){
 
 		if(this.authToken != null){
-			this.log.info("Already have an auth token (starting with", this.authToken.substring(0,10), ". Not getting a new one yet");
-			return this.authToken;
+			// Let's see how old it is
+			let endTime = new Date();
+			let timeDiff = endTime - this.tokenIssuedAtTime;
+			timeDiff /= 1000;
+			if( timeDiff > 5 * 60 ){
+				this.log.info("Token is older than 5 minutes. Getting a new one");
+			}else{
+				this.log.info("Already have an auth token (starting with", this.authToken.substring(0,10), ". Not getting a new one yet");
+				return this.authToken;
+			}
 		}
 
 		this.log.info("Entering _getAuthenticateAsync()");
@@ -90,7 +98,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		this.log.info("Using URL:", myUrl);
 		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
 try{
-		this.log.info("trying to log in with password", this.gatewayPassword);
+		// this.log.info("trying to log in with password", this.gatewayPassword);
 		const responsePromise = fetch(myUrl, {
 			method: 'POST',
 			headers: {
@@ -111,6 +119,7 @@ try{
 				}else{
 					this.log.error("Tried to authenticate, but got null");
 				}
+				this.tokenIssuedAtTime = new Date();
 				return this.authToken
 			}); 	
 }catch(error){
