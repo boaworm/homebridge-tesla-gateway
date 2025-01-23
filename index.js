@@ -45,7 +45,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 		this.log.info("No \"pullInterval\" set - defaulting to ", this.pollingInterval);
 	}
 	
-	this.log.info("password =", config.gatewayPassword);
+	// this.log.info("password =", config.gatewayPassword);
 	if(config.gatewayPassword){
 		this.gatewayPassword = config.gatewayPassword;
 	}else{
@@ -67,22 +67,6 @@ function HTTP_TESLA_GATEWAY(log, config) {
         this.log.warn("Property 'getUrl' is required!");
         this.log.warn("Aborting...");
         return;
-    }
-
-    this.statusCache = new Cache(config.statusCache, 0);
-    this.statusPattern = /(\d,[0-9]{1,3})/;
-    try {
-        if (config.statusPattern)
-            this.statusPattern = configParser.parsePattern(config.statusPattern);
-    } catch (error) {
-        this.log.warn("Property 'statusPattern' was given in an unsupported type. Using default one!");
-    }
-    this.patternGroupToExtract = 1;
-    if (config.patternGroupToExtract) {
-        if (typeof config.patternGroupToExtract === "number")
-            this.patternGroupToExtract = config.patternGroupToExtract;
-        else
-            this.log.warn("Property 'patternGroupToExtract' must be a number! Using default value!");
     }
 
 } // End of init function
