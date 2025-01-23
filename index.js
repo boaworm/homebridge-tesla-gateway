@@ -107,10 +107,11 @@ try{
 			.then( (responseData) => responseData.json())
 			.then( (responseJson) => {
 				this.authToken = responseJson.token;
+				this.log.info("Got a token!:", this.authToken);
 				return this.authToken
 			}); 	
 }catch(error){
-	this.log.error("cought exception:", error);
+	this.log.error("xxx _getAuthenticateAsync exception:", error);
 }
 	},
 
