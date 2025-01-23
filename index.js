@@ -95,12 +95,12 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 		this.BatteryService = new Service.BatteryService(this.name);
 		this._getStatus(function(){});
-		this._authenticateAsync(function(){});
-		this._getStatusFromGateway(function(){});
+		this._authenticateAsync(async function(){});
+		this._getStatusFromGateway(async function(){});
 
 		setInterval(function(){
 			//this._getStatus(function() {})
-			this._getStatusFromGateway(function() {})
+			this._getStatusFromGateway(async function() {})
 		}.bind(this), this.pollingInterval);
 
         return [informationService, this.BatteryService];
@@ -184,41 +184,6 @@ HTTP_TESLA_GATEWAY.prototype = {
 			}
 
 		}.bind(this))
-	},
+	}
 
-	/*
-    getSensorReading: function (callback) {
-		log.info("getSensorReading -> enter");	
-        http.httpRequest(this.getUrl, (error, response, body) => {
-            if (this.pullTimer)
-                this.pullTimer.resetTimer();
-
-            if (error) {
-                this.log("getSensorReading() failed: %s", error.message);
-                callback(error);
-            }
-            else if (!http.isHttpSuccessCode(response.statusCode)) {
-                this.log("getSensorReading() returned http error: %s", response.statusCode);
-                callback(new Error("Got http error code " + response.statusCode));
-            }
-            else {
-                let sensorValue;
-                try {
-                    sensorValue = utils.extractValueFromPattern(this.statusPattern, body, this.patternGroupToExtract);
-                } catch (error) {
-                    this.log("getSensorReading() error occurred while extracting status from body: " + error.message);
-                    callback(new Error("pattern error"));
-                    return;
-                }
-
-                if (this.debug)
-                    this.log("Status is currently at %s", sensorValue);
-
-				this.log.info("Retrieved [", sensorValue, "] from proxy service")
-                callback(null, sensorValue);
-            }
-        });
-    },
-
-	*/
 };
