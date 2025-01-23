@@ -168,6 +168,11 @@ try{
 	},
 
 	_getDataFromEndpointAsync: async function(serviceName){
+		if(this.authToken == null){
+			this.log.error("No authToken - ignoring request to pull from ",serviceName);
+			return;
+		}
+
 		this.log.info("Getting data from endpoint",serviceName,"using authToken",this.authToken.substring(0,10),"...");
 		let myUrl = this.getUrl.url + "/" + serviceName;
 		const responsePromise = fetch(myUrl, {
