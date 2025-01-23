@@ -13,7 +13,7 @@ dhop90's [esp8266](https://github.com/dhop90/homebridge-http-esp8266-battery) ba
 Supereg's [homebridge-http-temperature-sensor](https://github.com/Supereg/homebridge-http-temperature-sensor)
 
 With some modifications
-1) Generalizing it - making it specific to Tesla Gateway 
+1) Making it specific to Tesla Gateway (rather than battery or temp sensors)
 2) Authentication to Tesla Gateway API
 3) 30 minute token refresh (hardcoded for now)
 4) Reuse of token
