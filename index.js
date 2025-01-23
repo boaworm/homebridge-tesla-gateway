@@ -84,7 +84,7 @@ HTTP_TESLA_GATEWAY.prototype = {
         callback();
     },
 
-	_authenticateAsync: async function(){
+	_getAuthenticateAsync: async function(){
 		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
 		const responsePromise = fetch(this.getUrl + "/login/Basic", {
 			method: 'POST',
@@ -117,7 +117,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 		this.BatteryService = new Service.BatteryService(this.name);
 		this._getStatus(function(){});
-		this._authenticateAsync(async function(){});
+		this._getAuthenticateAsync(async function(){});
 		this._getStatusFromGateway(async function(){});
 
 		setInterval(function(){
@@ -145,7 +145,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 	_getStatusFromGateway: async function(callback){
 		// Fill in stuff here
 	
-		const token = await _authenticateAsync();
+		const token = await _getAuthenticateAsync();
 		this.log.info("*** Token", token.substring(0,10), "...");
 	},
 
