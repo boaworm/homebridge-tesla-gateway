@@ -89,6 +89,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		let myUrl = this.getUrl.url + "/login/Basic";
 		this.log.info("Using URL:", myUrl);
 		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
+try{
 		const responsePromise = fetch(myUrl, {
 			method: 'POST',
 			headers: {
@@ -106,6 +107,9 @@ HTTP_TESLA_GATEWAY.prototype = {
 				this.authToken = responseJson.token;
 				return authToken
 			}); 	
+}catch(error){
+	this.log.error("cought exception:", error);
+}
 	},
 
 
