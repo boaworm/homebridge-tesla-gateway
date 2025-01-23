@@ -226,13 +226,15 @@ try{
 				const gridStatus = await this._getGridStatus();
 				this.log.info("*** Grid Status:", gridStatus);
 
-				const chargeLevel = await this._getBatteryChargeLevel();
-				this.log.info("*** Battery Level:", chargeLevel);
+				const gridStatusInt = (gridStatus=="SystemGridConnected") ? 1 : 0;
+
+				const batteryLevel = await this._getBatteryChargeLevel();
+				this.log.info("*** Battery Level:", batteryLevel);
 
 				// MORE STUFF HERE !!!! 
 
 				this.BatteryService.getCharacteristic(Characteristic.BatteryLevel).updateValue(this.batteryLevel);
-				this.BatteryService.getCharacteristic(Characteristic.ChargingState).updateValue(this.gridStatus);
+				this.BatteryService.getCharacteristic(Characteristic.ChargingState).updateValue(this.gridStatusInt);
 
 				if(this.batteryLevel <= 30){
 					this.BatteryService.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
