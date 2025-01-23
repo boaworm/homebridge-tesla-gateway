@@ -1,7 +1,7 @@
 {
   "name": "homebridge-tesla-gateway",
   "displayName": "Tesla Gateway Plugin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Tesla Gateway Plugin for Homebridge. Creates an accessory with two Characteristics. Battery charge level (0-100) and Grid Status (1=online, 0=offline)",
   "author": "Henrik Thorburn",
   "license": "ISC",
