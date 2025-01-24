@@ -98,6 +98,15 @@ HTTP_TESLA_GATEWAY.prototype = {
 		}
 	},
 
+	truncateToken: function(token){
+		if(token == null){
+			return "NO-TOKEN";
+		}else{
+			let truncatedToken = token.substring(0,5) + "...";
+			return truncatedToken;
+		}
+	},
+
 	_getAuthenticateAsync: async function(){
 
 		if(this.authToken != null){
@@ -108,7 +117,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 			if( timeDiff > (30 * 60) ){
 				this.trace("Token is older than 30 minutes. Getting a new one");
 			}else{
-				this.trace("Already have an auth token (starting with", this.authToken.substring(0,10), ". Not getting a new one yet");
+				this.trace("Already have an auth token (starting with [" + this.truncateToken(this.authToken) + "] Not getting a new one yet");
 				return this.authToken;
 			}
 		}
@@ -132,7 +141,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 				.then( (responseJson) => {
 					this.authToken = responseJson.token;
 					if(this.authToken != null){
-						this.trace("Got a token: " + this.authToken.substring(0,10));
+						this.trace("Got a token: " + this.truncateToken(this.authToken));
 					}else{
 						this.log.error("Tried to authenticate against [", myUrl, "] but Gateway Endpoint returned null/invalid");
 					}
@@ -162,6 +171,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		this._getGridStatus(async function(){});
 		this._getBatteryChargeLevel(async function(){});
 		this.trace(function(message){});
+		this.truncateToken(function(token){});
 
 		setInterval(function(){
 			this._getStatusFromGateway(async function() {})
@@ -220,7 +230,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 			return null;
 		}
 
-		this.trace("Getting data from endpoint",serviceName,"using authToken",this.authToken.substring(0,10),"...");
+		this.trace("Getting data from endpoint " + serviceName + " using authToken [" + this.truncateToken(this.authToken));
 		let myUrl = this.getUrl.url + "/" + serviceName;
 		const responsePromise = fetch(myUrl, {
 			method: "GET",
@@ -238,7 +248,6 @@ HTTP_TESLA_GATEWAY.prototype = {
 	_getStatusFromGateway: async function(callback){
 		try{
 			const token = await this._getAuthenticateAsync();
-			// this.trace("*** Token", (token==null) ? "NULL" : token.substring(0,10), "...");
 			if(token != null){
 
 				const gridStatus = await this._getGridStatus();
