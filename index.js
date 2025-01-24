@@ -163,6 +163,7 @@ try{
 		this._getDataFromEndpointAsync(async function(serviceName){});
 		this._getGridStatus(async function(){});
 		this._getBatteryChargeLevel(async function(){});
+		this.trace(function(message){});
 
 		setInterval(function(){
 			//this._getStatus(function() {})
