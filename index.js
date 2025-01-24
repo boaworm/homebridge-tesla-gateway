@@ -310,7 +310,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		this.trace("Getting data from endpoint " + serviceName + " using authToken [" + this.truncateToken(this.authToken) + "]");
 
 		// Randomly damaging token, for resiliency testing
-		if( Math.foor(Math.random() * 5) == 0){
+		if( Math.floor(Math.random() * 5) == 0){
 			this.authToken = null;
 			this.log.info("Destroying token");
 		}
