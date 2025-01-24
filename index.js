@@ -49,7 +49,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	}
 
 	this.log.info("Verbose logging is set to:", this.verboseLogging);
-	trace("This should be visible if verboseLogging is enabled...");
+	this.trace("This should be visible if verboseLogging is enabled...");
 
 	this.pollingInterval = 150000; // Default, 2 and a half minutes...
 	//
