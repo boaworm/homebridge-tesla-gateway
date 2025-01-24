@@ -1,9 +1,5 @@
 "use strict";
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-
-// var debug = require('debug')('homebridge-tesla-gateway');
-// var Logger = require("mcuiot-logger").logger;
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 let Service, Characteristic, api;
 
@@ -50,7 +46,6 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	}
 
 	this.log.info("Verbose logging is set to:", this.verboseLogging);
-	this.trace("This should be visible if verboseLogging is enabled...");
 
 	this.pollingInterval = 150000; // Default, 2 and a half minutes...
 	//
@@ -154,6 +149,21 @@ HTTP_TESLA_GATEWAY.prototype = {
 				.then( (responseData) => responseData.json())
 				.then( (responseJson) => {
 
+					// See if we can grab a token:
+					if(responseJson != null && responseJson.token){
+						this.authToken = responseJson.token;
+						return this.authToken;
+					}else{
+						if(!this.isStartingUp()){
+							this.log.error("Failed to get new token. Response is:", responseJson);
+
+						}	
+
+					}
+	
+					/*
+
+
 					const httpStatusCode = responseJson.code;
 					if(httpStatusCode == 429){
 						if(!this.isStartingUp()){
@@ -182,6 +192,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 						}
 						return this.authToken;
 					}
+					*/
 				}); 	
 		}catch(error){
 			this.log.error("Exception when getting a token:", error);
@@ -311,52 +322,14 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 
 			}else{
-				this.log.error("No token - skipping fetching of status");
+				if(!this.isStartingUp()){
+					this.log.error("No token - skipping fetching of status");
+				}
 			}
 
 		}catch(error){
 			this.log.error("Exception:", error);
 		}
 	},
-
-	/*
-	_getStatus: function(callback){
-
-		const url = this.getUrl.url;
-		this.log.info("Processing with URL = ", url);
-
-		this._httpRequest(url, function(error,response, responseBody){
-			if(error){
-
-				this.log.error("Error!");
-				callback(error);
-			}else{
-				// this.log.info("Reponse = ", response); // lots of data here
-				this.log.info("ResponseBody = ", responseBody);
-
-				this.gridStatus = responseBody.split(',')[0];
-				this.batteryLevel = responseBody.split(',')[1];
-
-				this.log.info("Grid status = ", this.gridStatus);
-				this.log.info("BatteryLevel = ", this.batteryLevel);
-
-				// Let's do some random testing
-				//this.gridStatus = Math.floor(Math.random() * 2);
-				//this.batteryLevel = Math.floor(Math.random() * 100);
-
-				this.BatteryService.getCharacteristic(Characteristic.BatteryLevel).updateValue(this.batteryLevel);
-				this.BatteryService.getCharacteristic(Characteristic.ChargingState).updateValue(this.gridStatus);
-
-				if(this.batteryLevel <= 30)
-					this.BatteryService.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
-				else
-					this.BatteryService.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
-
-				callback();
-			}
-
-		}.bind(this))
-	}
-	*/
 
 };
