@@ -135,7 +135,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		}
 
 		const myUrl = this.getUrl.url + "/login/Basic";
-		this.trace("Attempting to get a new token from endpoint: " + myUrl);
+		this.trace("Refreshing auth token from endpoint: " + myUrl);
 		try{
 			const responsePromise = fetch(myUrl, {
 				method: 'POST',
@@ -215,9 +215,6 @@ HTTP_TESLA_GATEWAY.prototype = {
 		if(body==null){
 			// Only log this error if we're not in startup mode.
 			// This is because of plugins and threading - we may call too early
-			if(!this.isStartingUp()){
-				this.log.error("Got null when trying to get grid status");
-			}
 			if(this.verboseLogging){
 				this.log.warn("Unable to get Grid Status, returning cached value: [", this.currentGridStatus,"]");
 			}
@@ -233,9 +230,6 @@ HTTP_TESLA_GATEWAY.prototype = {
 		if(body==null){
 			// Only log this error if we're not in startup mode.
 			// This is because of plugins and threading - we may call too early
-			if(!this.isStartingUp()){
-				this.log.error("Got null when trying to get battery level");
-			}
 			if(this.verboseLogging){
 				this.log.warn("Failed to refresh batteryLevel, returning cached value [", this.currentBatteryLevel,"]");
 			}
@@ -245,32 +239,6 @@ HTTP_TESLA_GATEWAY.prototype = {
 		}
 	
 	},
-/*
-	_getDataFromEndpointAsync: async function(serviceName){
-		if(this.authToken == null){
-			// Only log this error if we're not in startup mode.
-			// This is because of plugins and threading - we may call too early
-			if(!this.isStartingUp()){
-				this.log.error("No authToken - ignoring request to pull from ",serviceName);
-			}
-			return null;
-		}
-
-		this.trace("Getting data from endpoint " + serviceName + " using authToken [" + this.truncateToken(this.authToken) + "]");
-		let myUrl = this.getUrl.url + "/" + serviceName;
-		const responsePromise = fetch(myUrl, {
-			method: "GET",
-			headers: {
-				"Authorization": `Bearer ${this.authToken}`, // Use the auth token from login
-			},
-		});
-
-		return responsePromise
-			.then( (responseData) => responseData.json())
-			.then( (responseJson) => {return responseJson});
-	},
-*/
-	// experiment begin
 
 	_getDataFromEndpointAsync: async function(serviceName){
 		if(this.authToken == null){
@@ -283,13 +251,6 @@ HTTP_TESLA_GATEWAY.prototype = {
 		}
 
 		this.trace("Getting data from endpoint " + serviceName + " using authToken [" + this.truncateToken(this.authToken) + "]");
-
-		// Randomly damaging token, for resiliency testing
-		if( Math.floor(Math.random() * 5) == 0){
-			this.authToken = null;
-			this.log.info("Destroying token");
-		}
-
 
 		let myUrl = this.getUrl.url + "/" + serviceName;
 		const responsePromise = fetch(myUrl, {
@@ -326,16 +287,9 @@ HTTP_TESLA_GATEWAY.prototype = {
 					}
 				}
 				return null;
-				// return responseData.json();
 			})
 			.then( (responseJson) => {return responseJson});
 	},
-
-
-
-
-
-	// experiment end
 
 
 	// The "main" function
