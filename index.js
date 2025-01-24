@@ -319,8 +319,29 @@ HTTP_TESLA_GATEWAY.prototype = {
 		return responsePromise
 			.then( (responseData) => {
 				this.log.info("responseData=", responseData);
-
-				return responseData.json();
+				if(responseData != null){
+					if(responseData.code == 200){
+						return responseData.json();
+					}else if(responseData.code == 401 || responseData.code == 403){
+						if(!this.isStartingUp()){
+							this.log.error("Unauthorized/", responseData.code);
+							this.log.error(responseData);
+						}
+					}else if(responseData.code == 423){
+						// Resource locked - too many API calls
+						if(!this.isStartingUp()){
+							this.log.error("Too may API calls/423");
+							this.log.error(responseData);
+						}
+					}else{
+						if(!this.isStartingUp()){
+							this.log.error("Unhandled http response code:", responseData.code);
+							this.log.error(responseData);
+						}		
+					}
+				}
+				return null;
+				// return responseData.json();
 			})
 			.then( (responseJson) => {return responseJson});
 	},
