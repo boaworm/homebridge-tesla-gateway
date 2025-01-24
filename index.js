@@ -276,7 +276,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 				const gridStatus = await this._getGridStatus();
 				const gridStatusInt = (gridStatus=="SystemGridConnected") ? 1 : 0;
-				this.trace("*** Grid Status: " + gridStatus + " / " + str(gridStatusInt));
+				this.trace("*** Grid Status: " + gridStatus + " / " + gridStatusInt);
 
 				const batteryLevel = Math.floor(await this._getBatteryChargeLevel());
 				this.trace("*** Battery Level: " + batteryLevel);
