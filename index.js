@@ -36,6 +36,9 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	this.authToken = null;
 	this.startupTime = new Date();
 
+	this.currentBatteryLevel = 100;
+	this.currentGridStatus = 1;
+
 	if(config.enableVerboseLogging){
 		this.log.info("Setting trace log to:", config.enableVerboseLogging);
 		if(config.enableVerboseLogging == "true" || config.enableVerboseLogging == 1){
@@ -47,7 +50,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 
 	this.log.info("Verbose logging is set to:", this.verboseLogging);
 
-	this.pollingInterval = 30000; // Default, 2 and a half minutes...
+	this.pollingInterval = 150000; // Default, 2 and a half minutes...
 	//
 	if(config.pullInterval){
 		this.log.info("Read \"pullInterval\" =",config.pullInterval," from config, applying");
@@ -159,41 +162,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 							this.log.error("Failed to get new token. Response is:", responseJson);
 
 						}	
-
 					}
-	
-					/*
-
-
-					const httpStatusCode = responseJson.code;
-					if(httpStatusCode == 429){
-						if(!this.isStartingUp()){
-							this.log.error("Tesla Gateway API Limit temporarily reached - reusing old token");
-						}
-						return this.authToken;
-					}else if(httpStatusCode == 401 || httpStatusCode == 403){
-						if(!this.isStartingUp()){
-							this.log.error("Failed to get token due to 401/403: ", responseJson.code);
-						}
-						return this.authToken; // perhaps previous token is still useful
-					}else if(httpStatusCode == 200){
-						this.authToken = responseJson.token;
-						if(this.authToken != null){
-							this.trace("Got a token: " + this.truncateToken(this.authToken));
-						}else{
-							this.log.error("Auth service responded successfully/200, but failed to give a valid token [", myUrl, "]");
-							this.log.error("responseJson=",responseJson);
-						}
-						this.tokenIssuedAtTime = new Date();
-						return this.authToken
-					}else{
-						if(!this.isStartingUp()){
-							this.log.error("Failed to get token due to unexpected http status code:", responseJson.code);
-							this.log.error("responseJson=",responseJson);
-						}
-						return this.authToken;
-					}
-					*/
 				}); 	
 		}catch(error){
 			this.log.error("Exception when getting a token:", error);
@@ -211,7 +180,6 @@ HTTP_TESLA_GATEWAY.prototype = {
             .setCharacteristic(Characteristic.FirmwareRevision, packageJSON.version);
 
 		this.BatteryService = new Service.BatteryService(this.name);
-		// this._getStatus(function(){});
 		this._getAuthenticateAsync(async function(){});
 		this._getStatusFromGateway(async function(){});
 		this._getDataFromEndpointAsync(async function(serviceName){});
@@ -250,9 +218,13 @@ HTTP_TESLA_GATEWAY.prototype = {
 			if(!this.isStartingUp()){
 				this.log.error("Got null when trying to get grid status");
 			}
-			return "Undetermined";
+			if(this.verboseLogging){
+				this.log.warn("Unable to get Grid Status, returning cached value: [", this.currentGridStatus,"]");
+			}
+			return this.currentGridStatus;
 		}else{
-			return body.grid_status;
+			const gridStatusInt = (body.grid_status=="SystemGridConnected") ? 1 : 0;
+			return gridStatusInt;
 		}
 	},
 
@@ -264,7 +236,10 @@ HTTP_TESLA_GATEWAY.prototype = {
 			if(!this.isStartingUp()){
 				this.log.error("Got null when trying to get battery level");
 			}
-			return 0;
+			if(this.verboseLogging){
+				this.log.warn("Failed to refresh batteryLevel, returning cached value [", this.currentBatteryLevel,"]");
+			}
+			return this.currentBatteryLevel;
 		}else{
 			return body.percentage;
 		}
@@ -333,7 +308,9 @@ HTTP_TESLA_GATEWAY.prototype = {
 					}else if(responseData.status == 401 || responseData.status == 403){
 						if(!this.isStartingUp()){
 							this.log.error("Unauthorized/", responseData.status);
-							this.log.error(responseData);
+							if(this.verboseLogging)
+								this.log.error(responseData);
+							this.authToken = null;// clearing token, will get fresh one next time
 						}
 					}else if(responseData.status == 423){
 						// Resource locked - too many API calls
@@ -368,10 +345,11 @@ HTTP_TESLA_GATEWAY.prototype = {
 			if(token != null){
 
 				const gridStatus = await this._getGridStatus();
-				const gridStatusInt = (gridStatus=="SystemGridConnected") ? 1 : 0;
-				this.trace("*** Grid Status: " + gridStatus + " / " + gridStatusInt);
+				this.currentGridStatus = gridStatusInt;
+				this.trace("*** Grid Status: " + gridStatus);
 
 				const batteryLevel = Math.floor(await this._getBatteryChargeLevel());
+				this.currentBatteryLevel = batteryLevel;
 				this.trace("*** Battery Level: " + batteryLevel);
 
 				// Refresh Characteristics 
