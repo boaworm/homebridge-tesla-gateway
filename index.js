@@ -270,7 +270,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		}
 	
 	},
-
+/*
 	_getDataFromEndpointAsync: async function(serviceName){
 		if(this.authToken == null){
 			// Only log this error if we're not in startup mode.
@@ -294,6 +294,43 @@ HTTP_TESLA_GATEWAY.prototype = {
 			.then( (responseData) => responseData.json())
 			.then( (responseJson) => {return responseJson});
 	},
+*/
+	// experiment begin
+
+	_getDataFromEndpointAsync: async function(serviceName){
+		if(this.authToken == null){
+			// Only log this error if we're not in startup mode.
+			// This is because of plugins and threading - we may call too early
+			if(!this.isStartingUp()){
+				this.log.error("No authToken - ignoring request to pull from ",serviceName);
+			}
+			return null;
+		}
+
+		this.trace("Getting data from endpoint " + serviceName + " using authToken [" + this.truncateToken(this.authToken) + "]");
+		let myUrl = this.getUrl.url + "/" + serviceName;
+		const responsePromise = fetch(myUrl, {
+			method: "GET",
+			headers: {
+				"Authorization": `Bearer ${this.authToken}`, // Use the auth token from login
+			},
+		});
+
+		return responsePromise
+			.then( (responseData) => {
+				this.log.info("responseData=", responseData);
+
+				return responseData.json();
+			})
+			.then( (responseJson) => {return responseJson});
+	},
+
+
+
+
+
+	// experiment end
+
 
 	// The "main" function
 	_getStatusFromGateway: async function(callback){
