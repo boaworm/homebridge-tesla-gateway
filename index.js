@@ -254,7 +254,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 			return null;
 		}
 
-		this.trace("Getting data from endpoint " + serviceName + " using authToken [" + this.truncateToken(this.authToken));
+		this.trace("Getting data from endpoint " + serviceName + " using authToken [" + this.truncateToken(this.authToken) + "]");
 		let myUrl = this.getUrl.url + "/" + serviceName;
 		const responsePromise = fetch(myUrl, {
 			method: "GET",
