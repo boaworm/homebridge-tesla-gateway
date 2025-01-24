@@ -101,6 +101,9 @@ HTTP_TESLA_GATEWAY.prototype = {
 	truncateToken: function(token){
 		if(token == null){
 			return "NO-TOKEN";
+		}else if(token instanceof Function){
+			this.log.info("Most likely in setup mode.. ignore this");
+			return "NO-TOKEN";
 		}else{
 			this.log.error("REMOVE ME. token =",token);
 			let truncatedToken = token.substring(0,5) + "...";
