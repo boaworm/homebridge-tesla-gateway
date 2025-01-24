@@ -102,6 +102,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		if(token == null){
 			return "NO-TOKEN";
 		}else{
+			this.log.error("REMOVE ME. token =",token);
 			let truncatedToken = token.substring(0,5) + "...";
 			return truncatedToken;
 		}
@@ -139,6 +140,13 @@ HTTP_TESLA_GATEWAY.prototype = {
 			return responsePromise
 				.then( (responseData) => responseData.json())
 				.then( (responseJson) => {
+
+					const httpStatusCode = responseJson.code;
+					if(httpStatusCode == 429){
+						this.log.info("Tesla Gateway API Limit temporarily reached");
+						return this.authToken;
+					}
+
 					this.authToken = responseJson.token;
 					if(this.authToken != null){
 						this.trace("Got a token: " + this.truncateToken(this.authToken));
