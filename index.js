@@ -115,7 +115,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		// this.log.info("Entering _getAuthenticateAsync()");
 		let myUrl = this.getUrl.url + "/login/Basic";
 		this.log.info("Using URL:", myUrl);
-		this.trace("Using URL:", myUrl);
+		this.trace("Using URL:" + myUrl);
 		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
 try{
 		// this.log.info("trying to log in with password", this.gatewayPassword);
@@ -136,7 +136,7 @@ try{
 				this.authToken = responseJson.token;
 				if(this.authToken != null){
 					this.log.info("Got a token:", this.authToken.substring(0,10));
-					this.trace("Got a token:", this.authToken.substring(0,10));
+					this.trace("Got a token:" + this.authToken.substring(0,10));
 				}else{
 					this.log.error("Tried to authenticate, but got null");
 				}
