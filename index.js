@@ -35,8 +35,21 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	this.ChargingState = null;
 	this.authToken = null;
 
+	/*
+	if(config.enableDebugLogging){
+		this.log.info("Setting debug log to:", config.enableDebugLogging);
+		if(config.enableDebugLogging == "true" || config.enableDebugLogging == 1){
+			this.debug = true;
+		}else{
+			this.debug = false;
+		}
+	}
+	*/
 
-	this.pollingInterval = 60000; // Default, 2 and a half minutes...
+	this.log.info("Debug logging is set to:", this.debug);
+	this.log.debug("This should be visible if debug is enabled...");
+
+	this.pollingInterval = 150000; // Default, 2 and a half minutes...
 	//
 	if(config.pullInterval){
 		this.log.info("Read \"pullInterval\" =",config.pullInterval," from config, applying");
@@ -45,7 +58,6 @@ function HTTP_TESLA_GATEWAY(log, config) {
 		this.log.info("No \"pullInterval\" set - defaulting to ", this.pollingInterval);
 	}
 	
-	// this.log.info("password =", config.gatewayPassword);
 	if(config.gatewayPassword){
 		this.gatewayPassword = config.gatewayPassword;
 	}else{
@@ -62,8 +74,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
             this.log.warn("Aborting...");
             return;
         }
-    }
-    else {
+    } else {
         this.log.warn("Property 'getUrl' is required!");
         this.log.warn("Aborting...");
         return;
@@ -77,6 +88,12 @@ HTTP_TESLA_GATEWAY.prototype = {
         this.log("Identify requested!");
         callback();
     },
+
+	debugLog: function(message){
+		if(this.debug){
+			
+		}
+	},
 
 	_getAuthenticateAsync: async function(){
 
