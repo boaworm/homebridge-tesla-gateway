@@ -98,7 +98,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		}
 	},
 
-	ifStartingUp: function(){
+	isStartingUp: function(){
 		const timeNow = new Date();
 		const elapsedTimeMillis = (timeNow - this.startupTime);
 		if(elapsedTimeMillis > (30*1000)){
