@@ -73,7 +73,7 @@ Below is one example configuration.
 {
     "accessories": [
         {
-          "accessory": "HTTP_TESLA_GATEWAY",
+          "accessory": "HTTP-TESLA-GATEWAY",
           "name": "My Gateway",
           "pullInterval": "120000",
           "enableVerboseLogging": false,
