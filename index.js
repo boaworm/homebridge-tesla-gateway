@@ -131,13 +131,13 @@ HTTP_TESLA_GATEWAY.prototype = {
 			if( timeDiff > (30 * 60) ){
 				this.trace("Token is older than 30 minutes. Getting a new one");
 			}else{
-				this.trace("Already have an auth token (starting with [" + this.truncateToken(this.authToken) + "] Not getting a new one yet");
+				this.trace("Recent auth token cached (starting with [" + this.truncateToken(this.authToken) + "] Reusing it");
 				return this.authToken;
 			}
 		}
 
 		const myUrl = this.getUrl.url + "/login/Basic";
-		this.trace("Attempting to get a new toke from endpoint: " + myUrl);
+		this.trace("Attempting to get a new token from endpoint: " + myUrl);
 		try{
 			const responsePromise = fetch(myUrl, {
 				method: 'POST',
@@ -156,23 +156,32 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 					const httpStatusCode = responseJson.code;
 					if(httpStatusCode == 429){
-						if(this.isStartingUp()){
-							// Ignoring
+						if(!this.isStartingUp()){
+							this.log.error("Tesla Gateway API Limit temporarily reached - reusing old token");
+						}
+						return this.authToken;
+					}else if(httpStatusCode == 401 || httpStatusCode == 403){
+						if(!this.isStartingUp()){
+							this.log.error("Failed to get token due to 401/403: ", responseJson.code);
+						}
+						return this.authToken; // perhaps previous token is still useful
+					}else if(httpStatusCode == 200){
+						this.authToken = responseJson.token;
+						if(this.authToken != null){
+							this.trace("Got a token: " + this.truncateToken(this.authToken));
 						}else{
-							this.log.info("Tesla Gateway API Limit temporarily reached - reusing old token");
+							this.log.error("Auth service responded successfully/200, but failed to give a valid token [", myUrl, "]");
+							this.log.error("responseJson=",responseJson);
+						}
+						this.tokenIssuedAtTime = new Date();
+						return this.authToken
+					}else{
+						if(!this.isStartingUp()){
+							this.log.error("Failed to get token due to unexpected http status code:", responseJson.code);
+							this.log.error("responseJson=",responseJson);
 						}
 						return this.authToken;
 					}
-
-					this.authToken = responseJson.token;
-					if(this.authToken != null){
-						this.trace("Got a token: " + this.truncateToken(this.authToken));
-					}else{
-						this.log.error("Tried to authenticate against [", myUrl, "] but Gateway Endpoint returned null/invalid");
-						this.log.error("responseJson=",responseJson);
-					}
-					this.tokenIssuedAtTime = new Date();
-					return this.authToken
 				}); 	
 		}catch(error){
 			this.log.error("Exception when getting a token:", error);
@@ -256,9 +265,6 @@ HTTP_TESLA_GATEWAY.prototype = {
 			// This is because of plugins and threading - we may call too early
 			if(!this.isStartingUp()){
 				this.log.error("No authToken - ignoring request to pull from ",serviceName);
-			}// else - ignore during startup
-			else{
-				this.trace("Ignoring error as we're in startup mode - remove this log...");
 			}
 			return null;
 		}
