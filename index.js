@@ -3,7 +3,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 
 var debug = require('debug')('homebridge-tesla-gateway');
-var Logger = require("mcuiot-logger").logger;
+// var Logger = require("mcuiot-logger").logger;
 
 let Service, Characteristic, api;
 
