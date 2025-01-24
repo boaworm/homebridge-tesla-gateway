@@ -14,6 +14,7 @@ const Cache = _http_base.Cache;
 const utils = _http_base.utils;
 const request = require('request')
 
+var debug = require('debug')('homebridge-tesla-gateway');
 
 const packageJSON = require("./package.json");
 
@@ -47,7 +48,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	*/
 
 	this.log.info("Debug logging is set to:", this.debug);
-	this.log.debug("This should be visible if debug is enabled...");
+	debug("This should be visible if debug is enabled...");
 
 	this.pollingInterval = 150000; // Default, 2 and a half minutes...
 	//
