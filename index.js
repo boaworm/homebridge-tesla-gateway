@@ -38,6 +38,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	this.BatteryLevel = null;
 	this.ChargingState = null;
 	this.authToken = null;
+	this.startupTime = new Date();
 
 	if(config.enableVerboseLogging){
 		this.log.info("Setting trace log to:", config.enableVerboseLogging);
@@ -105,47 +106,42 @@ HTTP_TESLA_GATEWAY.prototype = {
 			let timeDiff = endTime - this.tokenIssuedAtTime;
 			timeDiff /= 1000;
 			if( timeDiff > (30 * 60) ){
-				this.log.info("Token is older than 30 minutes. Getting a new one");
+				this.trace("Token is older than 30 minutes. Getting a new one");
 			}else{
-				this.log.info("Already have an auth token (starting with", this.authToken.substring(0,10), ". Not getting a new one yet");
+				this.trace("Already have an auth token (starting with", this.authToken.substring(0,10), ". Not getting a new one yet");
 				return this.authToken;
 			}
 		}
 
-		// this.log.info("Entering _getAuthenticateAsync()");
-		let myUrl = this.getUrl.url + "/login/Basic";
-		this.log.info("Using URL:", myUrl);
-		this.trace("Using URL:" + myUrl);
-		//const responsePromise = fetch(`${gatewayIp}/login/Basic`, {
-try{
-		// this.log.info("trying to log in with password", this.gatewayPassword);
-		const responsePromise = fetch(myUrl, {
-			method: 'POST',
-			headers: {
-				"Content-Type": "application/json",
-			},  
-			body: JSON.stringify({
-				username: "customer",  // Tesla account username
-				password: this.gatewayPassword,  // Tesla account password
-			})  
-		}); 
+		const myUrl = this.getUrl.url + "/login/Basic";
+		this.trace("Attempting to get a new toke from endpoint: " + myUrl);
+		try{
+			const responsePromise = fetch(myUrl, {
+				method: 'POST',
+				headers: {
+					"Content-Type": "application/json",
+				},  
+				body: JSON.stringify({
+					username: "customer",  // Tesla account username - is always "customer"
+					password: this.gatewayPassword,  // Tesla account password
+				})  
+			}); 
 
-		return responsePromise
-			.then( (responseData) => responseData.json())
-			.then( (responseJson) => {
-				this.authToken = responseJson.token;
-				if(this.authToken != null){
-					this.log.info("Got a token:", this.authToken.substring(0,10));
-					this.trace("Got a token:" + this.authToken.substring(0,10));
-				}else{
-					this.log.error("Tried to authenticate, but got null");
-				}
-				this.tokenIssuedAtTime = new Date();
-				return this.authToken
-			}); 	
-}catch(error){
-	this.log.error("xxx _getAuthenticateAsync exception:", error);
-}
+			return responsePromise
+				.then( (responseData) => responseData.json())
+				.then( (responseJson) => {
+					this.authToken = responseJson.token;
+					if(this.authToken != null){
+						this.trace("Got a token: " + this.authToken.substring(0,10));
+					}else{
+						this.log.error("Tried to authenticate against [", myUrl, "] but Gateway Endpoint returned null/invalid");
+					}
+					this.tokenIssuedAtTime = new Date();
+					return this.authToken
+				}); 	
+		}catch(error){
+			this.log.error("Exception when getting a token:", error);
+		}
 	},
 
 
@@ -159,7 +155,7 @@ try{
             .setCharacteristic(Characteristic.FirmwareRevision, packageJSON.version);
 
 		this.BatteryService = new Service.BatteryService(this.name);
-		this._getStatus(function(){});
+		// this._getStatus(function(){});
 		this._getAuthenticateAsync(async function(){});
 		this._getStatusFromGateway(async function(){});
 		this._getDataFromEndpointAsync(async function(serviceName){});
@@ -168,7 +164,6 @@ try{
 		this.trace(function(message){});
 
 		setInterval(function(){
-			//this._getStatus(function() {})
 			this._getStatusFromGateway(async function() {})
 		}.bind(this), this.pollingInterval);
 
@@ -212,11 +207,20 @@ try{
 
 	_getDataFromEndpointAsync: async function(serviceName){
 		if(this.authToken == null){
-			this.log.error("No authToken - ignoring request to pull from ",serviceName);
+			// Only log this error if we're not in startup mode.
+			// This is because of plugins and threading - we may call too early
+			const timeNow = new Date();
+			const elapsedTime = ((timeNow - this.startupTime)) /= 1000;
+			if(elapsedTime > 30){
+				this.log.error("No authToken - ignoring request to pull from ",serviceName);
+			}// else - ignore during startup
+			else{
+				this.trace("Ignoring error as we're in startup mode - remove this log...");
+			}
 			return null;
 		}
 
-		this.log.info("Getting data from endpoint",serviceName,"using authToken",this.authToken.substring(0,10),"...");
+		this.trace("Getting data from endpoint",serviceName,"using authToken",this.authToken.substring(0,10),"...");
 		let myUrl = this.getUrl.url + "/" + serviceName;
 		const responsePromise = fetch(myUrl, {
 			method: "GET",
@@ -234,20 +238,17 @@ try{
 	_getStatusFromGateway: async function(callback){
 		try{
 			const token = await this._getAuthenticateAsync();
-			this.log.info("*** Token", (token==null) ? "NULL" : token.substring(0,10), "...");
-
+			// this.trace("*** Token", (token==null) ? "NULL" : token.substring(0,10), "...");
 			if(token != null){
 
 				const gridStatus = await this._getGridStatus();
-
 				const gridStatusInt = (gridStatus=="SystemGridConnected") ? 1 : 0;
-				this.log.info("*** Grid Status:", gridStatus, "/", gridStatusInt);
+				this.trace("*** Grid Status: " + gridStatus + " / " + str(gridStatusInt));
 
 				const batteryLevel = Math.floor(await this._getBatteryChargeLevel());
-				this.log.info("*** Battery Level:", batteryLevel);
+				this.trace("*** Battery Level: " + batteryLevel);
 
-				// MORE STUFF HERE !!!! 
-
+				// Refresh Characteristics 
 				this.BatteryService.getCharacteristic(Characteristic.BatteryLevel).updateValue(batteryLevel);
 				this.BatteryService.getCharacteristic(Characteristic.ChargingState).updateValue(gridStatusInt);
 
@@ -256,11 +257,11 @@ try{
 				} else {
 					this.BatteryService.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
 				}
+				// End of refresh block
 
 				callback();
 
 
-				// END OF MORE STUFF HERE !!!! 
 			}else{
 				this.log.error("No token - skipping fetching of status");
 			}
@@ -270,6 +271,7 @@ try{
 		}
 	},
 
+	/*
 	_getStatus: function(callback){
 
 		const url = this.getUrl.url;
@@ -307,5 +309,6 @@ try{
 
 		}.bind(this))
 	}
+	*/
 
 };
