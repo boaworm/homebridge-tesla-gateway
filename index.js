@@ -98,14 +98,24 @@ HTTP_TESLA_GATEWAY.prototype = {
 		}
 	},
 
+	ifStartingUp: function(){
+		const timeNow = new Date();
+		const elapsedTimeMillis = (timeNow - this.startupTime);
+		if(elapsedTimeMillis > (30*1000)){
+			return false;
+		}else{
+			return true;
+		}
+	},
+
 	truncateToken: function(token){
 		if(token == null){
 			return "NO-TOKEN";
 		}else if(token instanceof Function){
-			this.log.info("Most likely in setup mode.. ignore this");
+			// This seems to happen because functions are called as plugin is initialized
+			// Can safely be ignored/treated as a case of no-token-yet
 			return "NO-TOKEN";
 		}else{
-			this.log.error("REMOVE ME. token =",token);
 			let truncatedToken = token.substring(0,5) + "...";
 			return truncatedToken;
 		}
@@ -146,7 +156,11 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 					const httpStatusCode = responseJson.code;
 					if(httpStatusCode == 429){
-						this.log.info("Tesla Gateway API Limit temporarily reached");
+						if(this.isStartingUp()){
+							// Ignoring
+						}else{
+							this.log.info("Tesla Gateway API Limit temporarily reached - reusing old token");
+						}
 						return this.authToken;
 					}
 
@@ -184,6 +198,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		this._getBatteryChargeLevel(async function(){});
 		this.trace(function(message){});
 		this.truncateToken(function(token){});
+		this.isStartingUp(function(){});
 
 		setInterval(function(){
 			this._getStatusFromGateway(async function() {})
@@ -211,9 +226,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		if(body==null){
 			// Only log this error if we're not in startup mode.
 			// This is because of plugins and threading - we may call too early
-			const timeNow = new Date();
-			const elapsedTimeMillis = (timeNow - this.startupTime);
-			if(elapsedTimeMillis > (30*1000)){
+			if(!isStartingUp()){
 				this.log.error("Got null when trying to get grid status");
 			}
 			return "Undetermined";
@@ -227,9 +240,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		if(body==null){
 			// Only log this error if we're not in startup mode.
 			// This is because of plugins and threading - we may call too early
-			const timeNow = new Date();
-			const elapsedTimeMillis = (timeNow - this.startupTime);
-			if(elapsedTimeMillis > (30*1000)){
+			if(!this.isStartingUp()){
 				this.log.error("Got null when trying to get battery level");
 			}
 			return 0;
@@ -243,9 +254,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		if(this.authToken == null){
 			// Only log this error if we're not in startup mode.
 			// This is because of plugins and threading - we may call too early
-			const timeNow = new Date();
-			const elapsedTimeMillis = (timeNow - this.startupTime);
-			if(elapsedTimeMillis > (30*1000)){
+			if(this.isStartingUp()){
 				this.log.error("No authToken - ignoring request to pull from ",serviceName);
 			}// else - ignore during startup
 			else{
