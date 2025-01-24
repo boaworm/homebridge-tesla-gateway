@@ -76,7 +76,7 @@ Below is one example configuration.
           "accessory": "HTTP_TESLA_GATEWAY",
           "name": "My Gateway",
           "pullInterval": "120000",
-          "enableDebugLogging": false,
+          "enableVerboseLogging": false,
           "strictSSL": false,
           "gatewayPassword" : "your password",
           "getUrl": "http://ip.to.gateway/api"
