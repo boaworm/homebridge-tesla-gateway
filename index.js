@@ -345,7 +345,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 			if(token != null){
 
 				const gridStatus = await this._getGridStatus();
-				this.currentGridStatus = gridStatusInt;
+				this.currentGridStatus = gridStatus;
 				this.trace("*** Grid Status: " + gridStatus);
 
 				const batteryLevel = Math.floor(await this._getBatteryChargeLevel());
@@ -354,7 +354,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 				// Refresh Characteristics 
 				this.BatteryService.getCharacteristic(Characteristic.BatteryLevel).updateValue(batteryLevel);
-				this.BatteryService.getCharacteristic(Characteristic.ChargingState).updateValue(gridStatusInt);
+				this.BatteryService.getCharacteristic(Characteristic.ChargingState).updateValue(gridStatus);
 
 				if(batteryLevel <= 30){
 					this.BatteryService.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW);
