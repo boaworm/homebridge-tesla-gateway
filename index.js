@@ -2,7 +2,7 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 
-var debug = require('debug')('homebridge-tesla-gateway');
+// var debug = require('debug')('homebridge-tesla-gateway');
 // var Logger = require("mcuiot-logger").logger;
 
 let Service, Characteristic, api;
@@ -33,25 +33,23 @@ function HTTP_TESLA_GATEWAY(log, config) {
     this.log = log;
     this.name = config.name;
     this.debug = config.debug || true;
+	this.verboseLogging = false;
 
 	this.BatteryLevel = null;
 	this.ChargingState = null;
 	this.authToken = null;
 
-	/*
-	if(config.enableDebugLogging){
-		this.log.info("Setting debug log to:", config.enableDebugLogging);
-		if(config.enableDebugLogging == "true" || config.enableDebugLogging == 1){
-			this.debug = true;
+	if(config.enableVerboseLogging){
+		this.log.info("Setting trace log to:", config.enableVerboseLogging);
+		if(config.enableVerboseLogging == "true" || config.enableVerboseLogging == 1){
+			this.verboseLogging = true;
 		}else{
-			this.debug = false;
+			this.verboseLogging = false;
 		}
 	}
-	*/
 
-	this.log.info("Debug logging is set to:", this.debug);
-	debug("This should be visible if debug is enabled...");
-	this.log.debug("Did this debug option work?");
+	this.log.info("Verbose logging is set to:", this.verboseLogging);
+	trace("This should be visible if verboseLogging is enabled...");
 
 	this.pollingInterval = 150000; // Default, 2 and a half minutes...
 	//
@@ -93,9 +91,9 @@ HTTP_TESLA_GATEWAY.prototype = {
         callback();
     },
 
-	debugLog: function(message){
-		if(this.debug){
-			
+	trace: function(message){
+		if(this.verboseLogging){
+			this.log.info(message);	
 		}
 	},
 
