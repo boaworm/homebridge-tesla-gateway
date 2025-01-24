@@ -47,7 +47,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 
 	this.log.info("Verbose logging is set to:", this.verboseLogging);
 
-	this.pollingInterval = 150000; // Default, 2 and a half minutes...
+	this.pollingInterval = 30000; // Default, 2 and a half minutes...
 	//
 	if(config.pullInterval){
 		this.log.info("Read \"pullInterval\" =",config.pullInterval," from config, applying");
@@ -308,6 +308,14 @@ HTTP_TESLA_GATEWAY.prototype = {
 		}
 
 		this.trace("Getting data from endpoint " + serviceName + " using authToken [" + this.truncateToken(this.authToken) + "]");
+
+		// Randomly damaging token, for resiliency testing
+		if( Math.foor(Math.random() * 5) == 0){
+			this.authToken = null;
+			this.log.info("Destroying token");
+		}
+
+
 		let myUrl = this.getUrl.url + "/" + serviceName;
 		const responsePromise = fetch(myUrl, {
 			method: "GET",
@@ -318,7 +326,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 
 		return responsePromise
 			.then( (responseData) => {
-				this.log.info("responseData=", responseData);
+				// this.log.info("responseData=", responseData);
 				if(responseData != null){
 					if(responseData.status == 200){
 						return responseData.json();
