@@ -2,6 +2,9 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 
+var debug = require('debug')('homebridge-tesla-gateway');
+var Logger = require("mcuiot-logger").logger;
+
 let Service, Characteristic, api;
 
 const _http_base = require("homebridge-http-base");
@@ -14,7 +17,6 @@ const Cache = _http_base.Cache;
 const utils = _http_base.utils;
 const request = require('request')
 
-var debug = require('debug')('homebridge-tesla-gateway');
 
 const packageJSON = require("./package.json");
 
@@ -49,6 +51,7 @@ function HTTP_TESLA_GATEWAY(log, config) {
 
 	this.log.info("Debug logging is set to:", this.debug);
 	debug("This should be visible if debug is enabled...");
+	this.log.debug("Did this debug option work?");
 
 	this.pollingInterval = 150000; // Default, 2 and a half minutes...
 	//
