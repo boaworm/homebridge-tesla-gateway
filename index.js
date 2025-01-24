@@ -254,7 +254,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		if(this.authToken == null){
 			// Only log this error if we're not in startup mode.
 			// This is because of plugins and threading - we may call too early
-			if(this.isStartingUp()){
+			if(!this.isStartingUp()){
 				this.log.error("No authToken - ignoring request to pull from ",serviceName);
 			}// else - ignore during startup
 			else{
