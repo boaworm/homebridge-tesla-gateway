@@ -210,7 +210,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 			// Only log this error if we're not in startup mode.
 			// This is because of plugins and threading - we may call too early
 			const timeNow = new Date();
-			const elapsedTime = ((timeNow - this.startupTime)) /= 1000;
+			const elapsedTime = ((timeNow - this.startupTime) /= 1000);
 			if(elapsedTime > 30){
 				this.log.error("No authToken - ignoring request to pull from ",serviceName);
 			}// else - ignore during startup
