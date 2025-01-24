@@ -18,6 +18,13 @@ With some modifications
 3) 30 minute token refresh (hardcoded for now)
 4) Reuse of token
 
+
+Currently, the following is hardcoded into the plugin:
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+It is needed as the Gateway has a self-signed SSL Certificate. I tried setting it in runtime, but it was too late. I also tried to rely on the default strictSSL = false option in the config, but it does not work. Future versons could correct this.
+
 Future enhancements could be:
 1) More and improved error handling. If the token gets invalidated, the plugins will fail for the next 30-sh minutes. 
 2) More sensor readings
