@@ -226,7 +226,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		if(body==null){
 			// Only log this error if we're not in startup mode.
 			// This is because of plugins and threading - we may call too early
-			if(!isStartingUp()){
+			if(!this.isStartingUp()){
 				this.log.error("Got null when trying to get grid status");
 			}
 			return "Undetermined";
