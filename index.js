@@ -215,7 +215,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		if(body==null){
 			// Only log this error if we're not in startup mode.
 			// This is because of plugins and threading - we may call too early
-			if(this.verboseLogging){
+			if(this.verboseLogging && !this.isStartingUp()){
 				this.log.warn("Unable to get Grid Status, returning cached value: [", this.currentGridStatus,"]");
 			}
 			return this.currentGridStatus;
@@ -230,7 +230,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		if(body==null){
 			// Only log this error if we're not in startup mode.
 			// This is because of plugins and threading - we may call too early
-			if(this.verboseLogging){
+			if(this.verboseLogging && !this.isStartingUp()){
 				this.log.warn("Failed to refresh batteryLevel, returning cached value [", this.currentBatteryLevel,"]");
 			}
 			return this.currentBatteryLevel;
