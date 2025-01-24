@@ -320,14 +320,14 @@ HTTP_TESLA_GATEWAY.prototype = {
 			.then( (responseData) => {
 				this.log.info("responseData=", responseData);
 				if(responseData != null){
-					if(responseData.code == 200){
+					if(responseData.status == 200){
 						return responseData.json();
-					}else if(responseData.code == 401 || responseData.code == 403){
+					}else if(responseData.status == 401 || responseData.status == 403){
 						if(!this.isStartingUp()){
-							this.log.error("Unauthorized/", responseData.code);
+							this.log.error("Unauthorized/", responseData.status);
 							this.log.error(responseData);
 						}
-					}else if(responseData.code == 423){
+					}else if(responseData.status == 423){
 						// Resource locked - too many API calls
 						if(!this.isStartingUp()){
 							this.log.error("Too may API calls/423");
@@ -335,7 +335,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 						}
 					}else{
 						if(!this.isStartingUp()){
-							this.log.error("Unhandled http response code:", responseData.code);
+							this.log.error("Unhandled http response code:", responseData.status);
 							this.log.error(responseData);
 						}		
 					}
