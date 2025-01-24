@@ -1,5 +1,5 @@
 "use strict";
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 let Service, Characteristic, api;
 
@@ -35,6 +35,10 @@ function HTTP_TESLA_GATEWAY(log, config) {
 	this.ChargingState = null;
 	this.authToken = null;
 	this.startupTime = new Date();
+
+	if(config.strictSSL && config.strictSSL == false){
+		process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+	}
 
 	if(config.enableVerboseLogging){
 		this.log.info("Setting trace log to:", config.enableVerboseLogging);
@@ -152,6 +156,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 					// See if we can grab a token:
 					if(responseJson != null && responseJson.token){
 						this.authToken = responseJson.token;
+						this.trace("Successfully retrieved a new token: " + this.truncateToken(this.authToken));
 						return this.authToken;
 					}else{
 						if(!this.isStartingUp()){
