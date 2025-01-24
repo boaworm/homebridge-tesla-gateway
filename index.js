@@ -144,6 +144,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 						this.trace("Got a token: " + this.truncateToken(this.authToken));
 					}else{
 						this.log.error("Tried to authenticate against [", myUrl, "] but Gateway Endpoint returned null/invalid");
+						this.log.error("responseJson=",responseJson);
 					}
 					this.tokenIssuedAtTime = new Date();
 					return this.authToken
@@ -197,7 +198,13 @@ HTTP_TESLA_GATEWAY.prototype = {
 	_getGridStatus: async function(){
 		const body = await this._getDataFromEndpointAsync("system_status/grid_status");
 		if(body==null){
-			this.log.error("Got null when trying to get grid status");
+			// Only log this error if we're not in startup mode.
+			// This is because of plugins and threading - we may call too early
+			const timeNow = new Date();
+			const elapsedTimeMillis = (timeNow - this.startupTime);
+			if(elapsedTimeMillis > (30*1000)){
+				this.log.error("Got null when trying to get grid status");
+			}
 			return "Undetermined";
 		}else{
 			return body.grid_status;
@@ -207,7 +214,13 @@ HTTP_TESLA_GATEWAY.prototype = {
 	_getBatteryChargeLevel: async function(){
 		const body = await this._getDataFromEndpointAsync("/system_status/soe");
 		if(body==null){
-			this.log.error("Got null when trying to get battery level");
+			// Only log this error if we're not in startup mode.
+			// This is because of plugins and threading - we may call too early
+			const timeNow = new Date();
+			const elapsedTimeMillis = (timeNow - this.startupTime);
+			if(elapsedTimeMillis > (30*1000)){
+				this.log.error("Got null when trying to get battery level");
+			}
 			return 0;
 		}else{
 			return body.percentage;
