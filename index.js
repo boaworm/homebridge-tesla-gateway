@@ -1,7 +1,7 @@
 "use strict";
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-let Service, Characteristic, api;
+let Service, Characteristic, ContactState, api;
 
 const _http_base = require("homebridge-http-base");
 const http = _http_base.http;
@@ -19,6 +19,7 @@ const packageJSON = require("./package.json");
 module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
+	ContactState = homebridge.hap.Characteristic.ContactSensorState;
 
     api = homebridge;
 
@@ -170,6 +171,27 @@ HTTP_TESLA_GATEWAY.prototype = {
 		}
 	},
 
+	getName: function (callback){
+		callback( null, this.name + "_contact");
+	},
+
+	/*
+	isDoorClosed: function(callback){
+		
+	},
+	*/
+
+	getContactSensorState: function (callback) {
+		return this.currentChargingState;	
+		/*
+		this.isDoorClosed((state) => {
+			this.isClosed = state;
+			this.log("getContactSensorState: ", this.isClosed);
+			callback(null, this.isClosed);
+		});
+		*/
+	},
+
 
     getServices: function () {
         const informationService = new Service.AccessoryInformation();
@@ -190,11 +212,25 @@ HTTP_TESLA_GATEWAY.prototype = {
 		this.truncateToken(function(token){});
 		this.isStartingUp(function(){});
 
+		this.ContactService = new Service.ContactService(this.name + "_contact");
+		this.ContactService
+			.setCharacteristic(Characteristic.Manufacturer, "ContactSensor")
+			.setCharacteristic(Characteristic.Model, "PowerGrid")
+			.setCharacteristic(Characteristic.SerialNumber, "Version 0.0.1");
+		this.ContactService
+			.getCharacteristic(Characteristic.ContactSensorState)
+			.on('get', this.getContactSensorState.bind(this));
+		this.ContactService
+			.getCharacteristic(Characteristic.Name)
+			.on('get', this.getName.bind(this));
+
+
+		
 		setInterval(function(){
 			this._getStatusFromGateway(async function() {})
 		}.bind(this), this.pollingInterval);
 
-        return [informationService, this.BatteryService];
+        return [informationService, this.BatteryService, this.ContactService];
     },
 
 	_httpRequest: function (url, callback){
@@ -316,6 +352,12 @@ HTTP_TESLA_GATEWAY.prototype = {
 				} else {
 					this.BatteryService.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
 				}
+
+				// Addition for ContactSensor as Contact with Grid
+				//this.ContactService.getCharacteristic(Characteristic.ContactSensorState).setValue(this.currentGridStatus);
+				this.ContactService.getCharacteristic(Characteristic.ContactSensorState).updateValue(this.currentGridStatus);
+
+
 				// End of refresh block
 
 				callback();
