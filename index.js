@@ -172,24 +172,12 @@ HTTP_TESLA_GATEWAY.prototype = {
 	},
 
 	getName: function (callback){
-		callback( null, this.name + "_contact");
+		callback( null, this.name);
+		//callback( null, this.name + "_contact");
 	},
-
-	/*
-	isDoorClosed: function(callback){
-		
-	},
-	*/
 
 	getContactSensorState: function (callback) {
 		callback(null, this.currentGridStatus);
-		/*
-		this.isDoorClosed((state) => {
-			this.isClosed = state;
-			this.log("getContactSensorState: ", this.isClosed);
-			callback(null, this.isClosed);
-		});
-		*/
 	},
 
 
