@@ -212,7 +212,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 		this.truncateToken(function(token){});
 		this.isStartingUp(function(){});
 
-		this.ContactService = new Service.ContactService(this.name + "_contact");
+		this.ContactService = new Service.ContactSensor(this.name + "_contact");
 		this.ContactService
 			.setCharacteristic(Characteristic.Manufacturer, "ContactSensor")
 			.setCharacteristic(Characteristic.Model, "PowerGrid")
@@ -356,7 +356,6 @@ HTTP_TESLA_GATEWAY.prototype = {
 				// Addition for ContactSensor as Contact with Grid
 				//this.ContactService.getCharacteristic(Characteristic.ContactSensorState).setValue(this.currentGridStatus);
 				this.ContactService.getCharacteristic(Characteristic.ContactSensorState).updateValue(this.currentGridStatus);
-
 
 				// End of refresh block
 
