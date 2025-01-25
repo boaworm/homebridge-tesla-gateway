@@ -342,14 +342,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 				}
 
 				// Addition for ContactSensor as Contact with Grid
-
-
-				// Some randomness for testing
-				const randomStatus = Math.floor( Math.random() * 2);
-				this.log.info("Setting contact sensor to:", randomStatus);
-				this.ContactService.getCharacteristic(Characteristic.ContactSensorState).updateValue(randomStatus);
-
-				// this.ContactService.getCharacteristic(Characteristic.ContactSensorState).updateValue(this.currentGridStatus);
+				this.ContactService.getCharacteristic(Characteristic.ContactSensorState).updateValue(this.currentGridStatus);
 
 				// End of refresh block
 
