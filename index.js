@@ -182,7 +182,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 	*/
 
 	getContactSensorState: function (callback) {
-		return this.currentChargingState;	
+		callback(null, this.currentChargingState);
 		/*
 		this.isDoorClosed((state) => {
 			this.isClosed = state;
