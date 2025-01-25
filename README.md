@@ -1,22 +1,26 @@
 # homebridge-tesla-gateway Plugin
 
 This [Homebridge](https://github.com/nfarina/homebridge) plugin can be used to display various Tesla Gateway data points in HomeKit. It treats the Gateway as a Battery.
-BatteryLevel = Total charge in connected Powerwalls combined
-ChargingState = Is it pulling from the grid or not (1=Grid online. 0=Grid OFFLINE)
+* BatteryLevel = Total charge in connected Powerwalls combined
+* ChargingState = Is it pulling from the grid or not (1=Grid online. 0=Grid OFFLINE)
 
-This plugin authenticates and connects directly to the LAN interface of the Gateway, using the "customer/<password>" setup.
+It also has a Contact Sensor. This contact sensor holds the same state as the ChargingState, and is an indication of whether the Gateway is connected to the grid or not.
+This is so that you can use Homekit Automation and drive behaviour based on whether you are hooked up to the grid or not.
 
-Please note that this is inspired by two projects:
+* "Contact Sensor State" == Open, means we are online, getting power from grid
+* "Contact Sensor State" == Closed, means we have lost the grid.
 
-dhop90's [esp8266](https://github.com/dhop90/homebridge-http-esp8266-battery) battery stuff, and 
+This plugin authenticates and connects directly to the LAN interface of the Gateway, using "customer" as username, and a password you define in the configuration file. "customer" is the same for every Powerwall installation. The password varies - you may have to talk to your installer to get one.
 
-Supereg's [homebridge-http-temperature-sensor](https://github.com/Supereg/homebridge-http-temperature-sensor)
 
-With some modifications
-1) Making it specific to Tesla Gateway (rather than battery or temp sensors)
+Here are the features of this plugin
+1) Exposing basic Tesla Gateway metrics
 2) Authentication to Tesla Gateway API
 3) 30 minute token refresh (hardcoded for now)
 4) Reuse of token
+5) Automatic retrieval of new token with 401 and 403 responses
+6) Exposure of "/system_status/grid_status" as a Contact Sensor (to drive Homekit Automation)
+7) Cached responses in case of gateway unavailability (status displayed will only reflect last correctly read value. Only a /system_status/grid_status true negative response would trigger state to be set to 0. This is to avoid temporary loss in connectivity to trigger automation falsely.
 
 
 Currently, the following is hardcoded into the plugin:
@@ -26,10 +30,17 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 It is needed as the Gateway has a self-signed SSL Certificate. I tried setting it in runtime, but it was too late. I also tried to rely on the default strictSSL = false option in the config, but it does not work. Future versons could correct this.
 
 Future enhancements could be:
-1) More and improved error handling. If the token gets invalidated, the plugins will fail for the next 30-sh minutes. 
-2) More sensor readings
-3) Graceful handling if connection is lost for some time (should we retain last values, set some default, ...)
-4) See if the "strictSSL" setting could be used to bypass the hardcoded SSL disabling
+
+1) More sensor readings
+2) Graceful handling if connection is lost for some time (should we retain last values, set some default, ...)
+3) See if the "strictSSL" setting could be used to bypass the hardcoded SSL disabling
+
+
+Please note that this is inspired by two projects:
+
+dhop90's [esp8266](https://github.com/dhop90/homebridge-http-esp8266-battery) battery stuff, and 
+
+Supereg's [homebridge-http-temperature-sensor](https://github.com/Supereg/homebridge-http-temperature-sensor)
 
 ## Installation
 
@@ -43,9 +54,10 @@ sudo npm install -g homebridge-tesla-gateway
 
 ## Updating the sensor reading in HomeKit
 
-Two Characteristincs are used:
+Three Characteristincs are used:
 * ChargingState - Used as a placeholder for if the GRID is online
 * BatteryLevel - Displays the powerwall(s) charge level.
+* ConnectSensorState - Open = connected to grid. Closed = not connected to grid
 
 ### The 'pull' way:
 
