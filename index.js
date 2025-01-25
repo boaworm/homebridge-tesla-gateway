@@ -156,6 +156,7 @@ HTTP_TESLA_GATEWAY.prototype = {
 					if(responseJson != null && responseJson.token){
 						this.authToken = responseJson.token;
 						this.trace("Successfully retrieved a new token: " + this.truncateToken(this.authToken));
+						this.tokenIssuedAtTime = new Date();
 						return this.authToken;
 					}else{
 						if(!this.isStartingUp()){
